@@ -1,0 +1,320 @@
+{
+ "benchmark": "event_mining_eval",
+ "date": "2026-10-10T19:45:57+00:00",
+ "labels": {
+  "file": "benchmarks/event_labels.csv",
+  "sha256": "cf741a6e0e8e5f0479b4135a6bfc594be307f027d3772b4056e12a6ca1b47011",
+  "videos": 1,
+  "events": 2
+ },
+ "code": {
+  "mining_py_sha256": "f918b6436657c7516ededc2750013e10a6378d69c504f6b22bf54bd2018c4b50",
+  "model_version": "yolo11n_coco+road_damage_yolo11n"
+ },
+ "config": {
+  "sample_fps": 5.0,
+  "sample_fps_effective": 4.8,
+  "max_seconds": 7200.0,
+  "match_tolerance_s": 1.0,
+  "matching": "prediction [t_start - tol, t_end + tol] overlaps an unmatched GT interval of a compatible type; greedy one-to-one by overlap; baseline clips are not predictions",
+  "telemetry": true
+ },
+ "provider": "CPU",
+ "videos": [
+  {
+   "video": "samples/tashkent_crossing.mp4",
+   "duration_s": 23.79
+  }
+ ],
+ "detection": {
+  "forward_collision_risk": {
+   "gt": 1,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 1,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.793
+   ],
+   "false_alerts_per_hour": 0.0
+  },
+  "vru_near_path": {
+   "gt": 1,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 1,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.793
+   ],
+   "false_alerts_per_hour": 0.0
+  },
+  "cut_in": {
+   "gt": 0,
+   "pred": 1,
+   "tp": 0,
+   "fp": 1,
+   "fn": 0,
+   "precision": 0.0,
+   "precision_ci95": [
+    0.0,
+    0.793
+   ],
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 151.3
+  },
+  "hard_braking": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "pothole": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "alligator_crack": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "transverse_crack": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "longitudinal_crack": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "road_damage_any_type": {
+   "gt": 0,
+   "pred": 0,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "precision_ci95": null,
+   "recall": null,
+   "recall_ci95": null,
+   "false_alerts_per_hour": 0.0
+  },
+  "safety": {
+   "gt": 2,
+   "pred": 1,
+   "tp": 0,
+   "fp": 1,
+   "fn": 2,
+   "precision": 0.0,
+   "precision_ci95": [
+    0.0,
+    0.793
+   ],
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.658
+   ],
+   "false_alerts_per_hour": 151.3
+  },
+  "overall": {
+   "gt": 2,
+   "pred": 1,
+   "tp": 0,
+   "fp": 1,
+   "fn": 2,
+   "precision": 0.0,
+   "precision_ci95": [
+    0.0,
+    0.793
+   ],
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.658
+   ],
+   "false_alerts_per_hour": 151.3
+  },
+  "overall_exact_types": {
+   "gt": 2,
+   "pred": 1,
+   "tp": 0,
+   "fp": 1,
+   "fn": 2,
+   "precision": 0.0,
+   "precision_ci95": [
+    0.0,
+    0.793
+   ],
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.658
+   ],
+   "false_alerts_per_hour": 151.3
+  }
+ },
+ "reduction": {
+  "analysed_s": 23.79,
+  "kept_s": 11.96,
+  "kept_event_s": 6.96,
+  "kept_ratio": 0.5027,
+  "kept_ratio_event_clips_only": 0.2926,
+  "gt_events": 2,
+  "event_retention": 1.0,
+  "event_retention_event_clips_only": 1.0,
+  "event_retention_via_matched_event": 0.0,
+  "retained": 2,
+  "retained_via_matched_event": 0
+ },
+ "latency": {
+  "frames": 115,
+  "ms_per_frame_p50": 300.6,
+  "ms_per_frame_p95": 460.1,
+  "wall_s_per_video_minute": 91.8,
+  "analysis_s_per_video_minute": 87.54,
+  "realtime_factor": 0.65,
+  "provider": "CPU",
+  "execution_provider": "CPUExecutionProvider",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cpu_count": 4,
+  "threads": "onnxruntime default",
+  "note": "ms per frame = both detectors + tracking on one analysed frame; wall time includes decoding, proposals and writing the anonymised clips (ffmpeg)"
+ },
+ "per_video": [
+  {
+   "video": "samples/tashkent_crossing.mp4",
+   "duration_s": 23.79,
+   "analysed_s": 23.79,
+   "sample_fps": 4.8,
+   "frames": 115,
+   "telemetry": "tashkent_crossing.csv",
+   "labelled_none": false,
+   "gt_events": 2,
+   "gt_events_after_analysed_span": 0,
+   "predictions": 1,
+   "tp": 0,
+   "kept_s": 11.96,
+   "kept_event_s": 6.96,
+   "kept_ratio": 0.5027,
+   "clips": [
+    {
+     "t0": 4.98,
+     "t1": 9.98,
+     "kind": "baseline"
+    },
+    {
+     "t0": 16.83,
+     "t1": 23.79,
+     "kind": "event"
+    }
+   ],
+   "ms_per_frame_p50": 300.6,
+   "ms_per_frame_p95": 460.2,
+   "analysis_s": 34.71,
+   "clips_s": 1.68,
+   "wall_s": 36.4
+  }
+ ],
+ "details": [
+  {
+   "video": "samples/tashkent_crossing.mp4",
+   "ground_truth": [
+    {
+     "line": 2,
+     "type": "vru_near_path",
+     "start_s": 21.0,
+     "end_s": 22.8,
+     "matched_pred": null,
+     "exact_type_match": false,
+     "retained": true,
+     "retained_via_matched_event": false,
+     "note": "Traffic officer (yellow vest, baton) standing on the lane line directly ahead; we pull off at 6-16 km/h and pass him on our right at about 1-2 m. From 21.0 s he is close in front (box ~55 px tall and growing, centred in our path) until he is beside our right front corner at ~22.8 s. Before 21 s he is 30-40 px tall and far away (not close). Not a hazard he caused (he is directing traffic) but it is exactly the geometric definition of the type."
+    },
+    {
+     "line": 3,
+     "type": "forward_collision_risk",
+     "start_s": 23.4,
+     "end_s": 23.79,
+     "matched_pred": null,
+     "exact_type_match": false,
+     "retained": true,
+     "retained_via_matched_event": false,
+     "note": "Collision in our forward path: a motorcycle (25-50 px) enters from the left at ~23.4 s, crosses ahead of us and strikes the left side of the car ahead at ~23.75 s; the video ends at 23.79 s. Judgement call: the taxonomy has no type for a crash between two other road users; forward_collision_risk is the closest. Strictly, our own time-to-contact is not under 3 s (the car ahead was pulling away until ~23.3 s)."
+    }
+   ],
+   "predictions": [
+    {
+     "index": 0,
+     "type": "cut_in",
+     "t_start": 20.83,
+     "t_end": 21.67,
+     "t_peak": 21.67,
+     "conf": 0.67,
+     "severity": 0.61,
+     "status": "FP",
+     "matched_gt_line": null,
+     "clip_id": "f9d708b4563d4057",
+     "evidence": {
+      "road_user": "car",
+      "from_side": "right",
+      "lateral_px": -41.8,
+      "over_s": 0.83
+     }
+    }
+   ]
+  }
+ ],
+ "caveats": [
+  "Tiny test set: 1 video(s), 23.79 s of video, 2 labelled event(s); 95 % intervals are given for every rate.",
+  "Labels by the team (one annotator, no second-annotator agreement), from frames reviewed every 0.5 s and frame by frame around events; judgement calls are written in the label file's note column.",
+  "Single camera: the team's own dashcam, daylight, one city; no other cameras, mounts, night or weather.",
+  "False alerts per hour are extrapolated from the short labelled footage: one false alert in a minute of video reads as 60 per hour.",
+  "kept_ratio includes the 5 s random baseline clip the product keeps per trip; event-only figures are reported next to it."
+ ]
+}

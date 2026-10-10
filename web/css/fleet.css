@@ -1,0 +1,77 @@
+/* SwarmSight Fleet: additions to the design system for trips, review and DataMine. */
+.badge { display: inline-block; min-width: 18px; height: 18px; padding: 0 5px; margin-left: .35rem; border-radius: 9px; background: var(--hazard); color: #fff;
+  font: 600 10.5px/18px var(--mono); text-align: center; vertical-align: 1px; }
+.drop.compact { min-height: 76px; }
+.field { width: 100%; height: 36px; padding: 0 .7rem; border: 1px solid var(--rule-2); border-radius: 6px; background: var(--surface); font: 400 .9rem var(--sans); color: var(--ink); margin-top: .5rem; }
+.field.inline { width: 160px; display: inline-block; margin: 0 0 0 .4rem; height: 32px; }
+.field-l { display: block; font-size: .84rem; color: var(--ink-2); margin-top: .7rem; }
+.field-l input[type=file] { display: block; margin-top: .4rem; font-size: .84rem; max-width: 100%; }
+.check { display: flex; align-items: center; gap: .5rem; font-size: .9rem; margin-top: .4rem; cursor: pointer; }
+.sel { height: 40px; border: 1px solid var(--rule-2); border-radius: 6px; background: var(--surface); padding: 0 .5rem; font: 400 .88rem var(--sans); max-width: 210px; }
+.rev { border-top: 1px solid var(--rule); padding-top: .9rem; margin-top: .9rem; }
+.rev .field { margin-top: .6rem; }
+
+.trip-card { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 1.1rem; align-items: start; }
+.trip-card img { border-radius: 6px; display: block; }
+@media (max-width: 640px) { .trip-card { grid-template-columns: 1fr; } }
+.samples { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.sample { border: 1px solid var(--rule); background: var(--surface); border-radius: 6px; padding: 0; overflow: hidden; cursor: pointer; text-align: left; font: 500 .78rem var(--sans); color: var(--ink-2); }
+.sample img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.sample span { display: block; padding: .35rem .5rem; }
+.sample:hover { border-color: var(--ink); }
+
+.factrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); border-top: 1px solid var(--ink); border-bottom: 1px solid var(--rule); }
+.factrow > div { padding: .9rem 1rem .95rem 0; }
+.factrow > div + div { padding-left: 1rem; border-left: 1px solid var(--rule); }
+.factrow .label { display: block; margin-bottom: .35rem; }
+.factrow b { font-weight: 500; font-size: .92rem; }
+@media (max-width: 640px) { .factrow > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); } }
+
+.ttl { position: relative; height: 34px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+.ttl .seg-kept { position: absolute; top: 0; bottom: 0; background: #ece7da; border-left: 1px solid var(--rule-2); border-right: 1px solid var(--rule-2); }
+.ttl .mark { position: absolute; top: 5px; bottom: 5px; width: 4px; margin-left: -2px; border-radius: 2px; }
+.ttl .mark:hover { transform: scaleX(1.8); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); gap: 1.2rem; }
+.ecard { border: 1px solid var(--rule); background: var(--surface); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; scroll-margin-top: 90px; }
+.ecard .media { background: var(--instrument); }
+.ecard .media video, .ecard .media img { display: block; width: 100%; border-radius: 0; }
+.ecard .body { padding: 1rem 1.1rem 1.1rem; }
+.ecard h3 { margin: .55rem 0 .5rem; font-size: 1.15rem; }
+.evtext { font-size: .86rem; color: var(--ink-2); margin-top: .6rem; }
+.kchip { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .07em; color: var(--ink-2); display: inline-flex; align-items: center; gap: .4rem; }
+.kchip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.revgrid { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 1.2rem; align-items: start; margin-bottom: 3rem; }
+@media (max-width: 860px) { .revgrid { grid-template-columns: 1fr; } }
+.queue { display: flex; flex-direction: column; gap: 6px; max-height: 78vh; overflow-y: auto; }
+.qitem { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: .7rem; align-items: center; text-align: left; border: 1px solid var(--rule); background: var(--surface);
+  border-radius: 6px; padding: 6px; cursor: pointer; font: 400 .86rem var(--sans); color: var(--ink); }
+.qitem img, .qitem .noimg { width: 72px; height: 44px; object-fit: cover; border-radius: 4px; background: var(--instrument); display: block; }
+.qitem .mono { font-size: .7rem; }
+.qitem.active { border-color: var(--ink); box-shadow: inset 3px 0 0 var(--ink); }
+.clipbox video, .clipbox img { width: 100%; display: block; border-radius: 6px; background: var(--instrument); }
+.seg .cnt { font: 500 10.5px var(--mono); color: var(--hazard); }
+.seg button.active .cnt { color: #ffcf8a; }
+
+.flowline { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--ink); margin-bottom: clamp(28px, 4vw, 48px); }
+.flowline > div { padding: .9rem .9rem 1rem 0; }
+.flowline > div + div { padding-left: .9rem; border-left: 1px solid var(--rule); }
+.flowline > div.out { background: linear-gradient(var(--surface), transparent); }
+.flowline .label { display: block; margin-bottom: .4rem; }
+.flowline b { display: block; font-weight: 600; margin-bottom: .25rem; }
+.flowline p { font-size: .84rem; color: var(--ink-2); }
+@media (max-width: 960px) { .flowline { grid-template-columns: repeat(3, minmax(0, 1fr)); } .flowline > div:nth-child(4) { border-left: 0; padding-left: 0; } }
+@media (max-width: 560px) { .flowline { grid-template-columns: 1fr; } .flowline > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); } }
+
+.nums4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem; }
+@media (max-width: 860px) { .nums4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.cols.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 760px) { .cols.c3 { grid-template-columns: 1fr; } }
+.vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.vcard { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; background: var(--surface); text-decoration: none; }
+.vcard img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.vcard span { display: flex; justify-content: space-between; padding: .4rem .6rem; font-size: .84rem; }
+.rules { margin: 0; padding-left: 1.1rem; max-width: 80ch; }
+.rules li { margin: .35rem 0; color: var(--ink-2); font-size: .92rem; }
+.rules b { color: var(--ink); }
