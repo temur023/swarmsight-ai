@@ -1,0 +1,53 @@
+name: Deploy to Modal (GPU)
+
+# Run from the browser: Actions -> "Deploy to Modal (GPU)" -> Run workflow.
+# Needs two repository secrets (Settings -> Secrets and variables -> Actions), from modal.com -> Settings -> API Tokens:
+#   MODAL_TOKEN_ID      ak-...
+#   MODAL_TOKEN_SECRET  as-...
+# The deployment is tagged with the commit it was built from, so the site and the submitted commit can be matched.
+
+on:
+  workflow_dispatch:
+    inputs:
+      min_containers:
+        description: "Warm containers (1 during the jury window, 0 otherwise)"
+        type: choice
+        options: ["0", "1"]
+        default: "0"
+      gpu:
+        description: "GPU type"
+        type: choice
+        options: ["L4", "T4", "A10G"]
+        default: "L4"
+
+concurrency:
+  group: deploy-modal
+  cancel-in-progress: false
+
+jobs:
+  tests:
+    uses: ./.github/workflows/ci.yml
+  deploy:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install modal==1.6.1 requests==2.32.5
+      - name: Deploy
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          MODAL_MIN_CONTAINERS: ${{ inputs.min_containers }}
+          MODAL_GPU: ${{ inputs.gpu }}
+        run: |
+          set -o pipefail
+          modal deploy modal_app.py --strategy recreate --tag "${GITHUB_SHA::7}" 2>&1 | tee deploy.log
+          url=$(grep -oE 'https://[a-zA-Z0-9.-]+\.modal\.run' deploy.log | head -1)
+          echo "URL=$url" >> "$GITHUB_ENV"
+          echo "### Deployed ${GITHUB_SHA::7} to $url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Smoke test on the public URL (health on GPU, sample trip, upload, clip streaming)
+        run: python scripts/smoke_deploy.py "$URL" --expect-gpu 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"

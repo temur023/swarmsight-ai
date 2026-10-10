@@ -1,5 +1,15 @@
 # Deploy on Modal (GPU)
 
+## From the browser (GitHub Actions)
+
+1. modal.com → Settings → API Tokens → **New token**: copy the token id (`ak-…`) and secret (`as-…`).
+2. github.com/temur023/swarmsight-ai → Settings → Secrets and variables → Actions → **New repository secret**:
+   `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`.
+3. Actions → **Deploy to Modal (GPU)** → Run workflow (warm containers: 0 now, 1 for the jury window; GPU: L4).
+   The workflow runs the tests, deploys with `--strategy recreate --tag <commit>`, prints the public URL in the run
+   summary and smoke-tests it (GPU health, sample trip, upload, clip streaming).
+
+
 `modal_app.py` serves the unchanged FastAPI app (`swarmsight.server:app`) from one Modal container with an NVIDIA L4 (or T4)
 GPU, ONNX Runtime GPU (CUDA 13 + cuDNN 9 from pip, no CUDA base image) and ffmpeg. The SQLite database, clips and dataset
 exports go to the Modal Volume `swarmsight-data` (mounted at `/data`, `SWARMSIGHT_RUNTIME=/data/runtime`), so they survive
