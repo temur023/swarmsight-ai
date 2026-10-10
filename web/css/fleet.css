@@ -76,3 +76,5 @@
 .rules li { margin: .35rem 0; color: var(--ink-2); font-size: .92rem; }
 .rules b { color: var(--ink); }
 .sample-trip { display: flex; flex-direction: column; gap: 1.1rem; }
+.seg { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.seg button { white-space: nowrap; }
