@@ -71,6 +71,29 @@ class Track:
                 last = t
         return out
 
+    def outages(self) -> list[tuple[float, float]]:
+        """GPS freezes (a tunnel, an underpass): the position stops moving while the car was driving, then jumps.
+        A speed drop there is the receiver, not the brakes."""
+        n = len(self)
+        if n < 4:
+            return []
+        d = np.array([haversine_m(self.lat[i], self.lon[i], self.lat[i + 1], self.lon[i + 1]) for i in range(n - 1)])
+        dt = np.maximum(np.diff(self.t), 1e-3)
+        v = d / dt
+        out, i = [], 1
+        while i < n - 1:
+            if d[i] < 1.0 and v[i - 1] > 4.2:
+                j = i
+                while j < n - 1 and d[j] < 1.0:
+                    j += 1
+                before = float(np.median(v[max(0, i - 3):i]))
+                if j - i >= 2 and j < n - 1 and (v[j] > 1.5 * before or v[j] > 40.0):
+                    out.append((float(self.t[i]) - 1.0, float(self.t[j + 1]) + 1.0))
+                i = j + 1
+            else:
+                i += 1
+        return out
+
     def braking(self, threshold: float = HARD_BRAKE_MS2) -> list[dict]:
         """Intervals where the car decelerates harder than `threshold` (IMU if present, else GPS speed)."""
         if len(self) < 3:
@@ -93,8 +116,10 @@ class Track:
                 cur = None
         if cur is not None:
             out.append(cur)
+        gaps = self.outages() if self.accel is None else []
         out = [b for b in out if b["peak_decel_ms2"] <= MAX_PLAUSIBLE_MS2
-               and float(np.interp(b["t_start"] - 1.0, self.t, self.speed)) * 3.6 >= MIN_SPEED_KMH]
+               and float(np.interp(b["t_start"] - 1.0, self.t, self.speed)) * 3.6 >= MIN_SPEED_KMH
+               and not any(a <= b["t_peak"] <= z for a, z in gaps)]
         for b in out:
             b["speed_before_kmh"] = round(float(np.interp(b["t_start"] - 1.0, self.t, self.speed)) * 3.6, 1)
             b["speed_after_kmh"] = round(float(np.interp(b["t_end"] + 1.0, self.t, self.speed)) * 3.6, 1)

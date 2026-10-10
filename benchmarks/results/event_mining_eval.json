@@ -1,22 +1,26 @@
 {
  "benchmark": "event_mining_eval",
- "date": "2026-10-10T19:45:57+00:00",
+ "date": "2026-10-10T20:10:19+00:00",
  "labels": {
   "file": "benchmarks/event_labels.csv",
-  "sha256": "cf741a6e0e8e5f0479b4135a6bfc594be307f027d3772b4056e12a6ca1b47011",
-  "videos": 1,
-  "events": 2
+  "sha256": "7e9ae60955a397992de229b46ca15ab08fcba3ad15deb9b94e818ba99562303a",
+  "videos": 2,
+  "events": 22
  },
  "code": {
-  "mining_py_sha256": "f918b6436657c7516ededc2750013e10a6378d69c504f6b22bf54bd2018c4b50",
+  "mining_py_sha256": "c14e9e5bbe9f4495ab431744fe0eb4e24dc180ab92b383f88b2189bb92f3c628",
   "model_version": "yolo11n_coco+road_damage_yolo11n"
  },
  "config": {
   "sample_fps": 5.0,
-  "sample_fps_effective": 4.8,
+  "sample_fps_effective": {
+   "samples/tashkent_crossing.mp4": 4.8,
+   "samples/tashkent_redmi.mp4": 0.894
+  },
   "max_seconds": 7200.0,
   "match_tolerance_s": 1.0,
-  "matching": "prediction [t_start - tol, t_end + tol] overlaps an unmatched GT interval of a compatible type; greedy one-to-one by overlap; baseline clips are not predictions",
+  "match_tolerance_rule": "max(--tol, one analysed-frame interval) per video",
+  "matching": "prediction [t_start - tol, t_end + tol] overlaps an unmatched label of a compatible type; greedy one-to-one by overlap; an unmatched prediction overlapping an already matched label is a duplicate (dup), not a false alert; precision = TP / predictions; family level merges overlapping damage labels of any type into one road-damage event; baseline clips are not predictions",
   "telemetry": true
  },
  "provider": "CPU",
@@ -24,6 +28,10 @@
   {
    "video": "samples/tashkent_crossing.mp4",
    "duration_s": 23.79
+  },
+  {
+   "video": "samples/tashkent_redmi.mp4",
+   "duration_s": 134.23
   }
  ],
  "detection": {
@@ -31,200 +39,259 @@
    "gt": 1,
    "pred": 0,
    "tp": 0,
+   "dup": 0,
    "fp": 0,
    "fn": 1,
    "precision": null,
    "precision_ci95": null,
+   "precision_incl_duplicates": null,
    "recall": 0.0,
    "recall_ci95": [
     0.0,
     0.793
    ],
-   "false_alerts_per_hour": 0.0
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "vru_near_path": {
    "gt": 1,
    "pred": 0,
    "tp": 0,
+   "dup": 0,
    "fp": 0,
    "fn": 1,
    "precision": null,
    "precision_ci95": null,
+   "precision_incl_duplicates": null,
    "recall": 0.0,
    "recall_ci95": [
     0.0,
     0.793
    ],
-   "false_alerts_per_hour": 0.0
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "cut_in": {
    "gt": 0,
-   "pred": 1,
+   "pred": 0,
    "tp": 0,
-   "fp": 1,
+   "dup": 0,
+   "fp": 0,
    "fn": 0,
-   "precision": 0.0,
-   "precision_ci95": [
-    0.0,
-    0.793
-   ],
+   "precision": null,
+   "precision_ci95": null,
+   "precision_incl_duplicates": null,
    "recall": null,
    "recall_ci95": null,
-   "false_alerts_per_hour": 151.3
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "hard_braking": {
    "gt": 0,
    "pred": 0,
    "tp": 0,
+   "dup": 0,
    "fp": 0,
    "fn": 0,
    "precision": null,
    "precision_ci95": null,
+   "precision_incl_duplicates": null,
    "recall": null,
    "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "pothole": {
-   "gt": 0,
+   "gt": 1,
    "pred": 0,
    "tp": 0,
+   "dup": 0,
    "fp": 0,
-   "fn": 0,
+   "fn": 1,
    "precision": null,
    "precision_ci95": null,
-   "recall": null,
-   "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "precision_incl_duplicates": null,
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.793
+   ],
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "alligator_crack": {
-   "gt": 0,
-   "pred": 0,
-   "tp": 0,
+   "gt": 6,
+   "pred": 1,
+   "tp": 1,
+   "dup": 0,
    "fp": 0,
-   "fn": 0,
-   "precision": null,
-   "precision_ci95": null,
-   "recall": null,
-   "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "fn": 5,
+   "precision": 1.0,
+   "precision_ci95": [
+    0.207,
+    1.0
+   ],
+   "precision_incl_duplicates": 1.0,
+   "recall": 0.167,
+   "recall_ci95": [
+    0.03,
+    0.564
+   ],
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "transverse_crack": {
-   "gt": 0,
-   "pred": 0,
+   "gt": 6,
+   "pred": 1,
    "tp": 0,
-   "fp": 0,
-   "fn": 0,
-   "precision": null,
-   "precision_ci95": null,
-   "recall": null,
-   "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "dup": 0,
+   "fp": 1,
+   "fn": 6,
+   "precision": 0.0,
+   "precision_ci95": [
+    0.0,
+    0.793
+   ],
+   "precision_incl_duplicates": 0.0,
+   "recall": 0.0,
+   "recall_ci95": [
+    0.0,
+    0.39
+   ],
+   "false_alerts_per_hour": 22.8,
+   "duplicates_per_hour": 0.0
   },
   "longitudinal_crack": {
-   "gt": 0,
-   "pred": 0,
-   "tp": 0,
+   "gt": 7,
+   "pred": 12,
+   "tp": 7,
+   "dup": 5,
    "fp": 0,
    "fn": 0,
-   "precision": null,
-   "precision_ci95": null,
-   "recall": null,
-   "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "precision": 0.583,
+   "precision_ci95": [
+    0.32,
+    0.807
+   ],
+   "precision_incl_duplicates": 1.0,
+   "recall": 1.0,
+   "recall_ci95": [
+    0.646,
+    1.0
+   ],
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 113.9
   },
   "road_damage_any_type": {
-   "gt": 0,
-   "pred": 0,
-   "tp": 0,
+   "gt": 8,
+   "pred": 14,
+   "tp": 7,
+   "dup": 7,
    "fp": 0,
-   "fn": 0,
-   "precision": null,
-   "precision_ci95": null,
-   "recall": null,
-   "recall_ci95": null,
-   "false_alerts_per_hour": 0.0
+   "fn": 1,
+   "precision": 0.5,
+   "precision_ci95": [
+    0.268,
+    0.732
+   ],
+   "precision_incl_duplicates": 1.0,
+   "recall": 0.875,
+   "recall_ci95": [
+    0.529,
+    0.978
+   ],
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 159.5
   },
   "safety": {
    "gt": 2,
-   "pred": 1,
+   "pred": 0,
    "tp": 0,
-   "fp": 1,
+   "dup": 0,
+   "fp": 0,
    "fn": 2,
-   "precision": 0.0,
-   "precision_ci95": [
-    0.0,
-    0.793
-   ],
+   "precision": null,
+   "precision_ci95": null,
+   "precision_incl_duplicates": null,
    "recall": 0.0,
    "recall_ci95": [
     0.0,
     0.658
    ],
-   "false_alerts_per_hour": 151.3
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 0.0
   },
   "overall": {
-   "gt": 2,
-   "pred": 1,
-   "tp": 0,
-   "fp": 1,
-   "fn": 2,
-   "precision": 0.0,
+   "gt": 10,
+   "pred": 14,
+   "tp": 7,
+   "dup": 7,
+   "fp": 0,
+   "fn": 3,
+   "precision": 0.5,
    "precision_ci95": [
-    0.0,
-    0.793
+    0.268,
+    0.732
    ],
-   "recall": 0.0,
+   "precision_incl_duplicates": 1.0,
+   "recall": 0.7,
    "recall_ci95": [
-    0.0,
-    0.658
+    0.397,
+    0.892
    ],
-   "false_alerts_per_hour": 151.3
+   "false_alerts_per_hour": 0.0,
+   "duplicates_per_hour": 159.5
   },
   "overall_exact_types": {
-   "gt": 2,
-   "pred": 1,
-   "tp": 0,
+   "gt": 22,
+   "pred": 14,
+   "tp": 8,
+   "dup": 5,
    "fp": 1,
-   "fn": 2,
-   "precision": 0.0,
+   "fn": 14,
+   "precision": 0.571,
    "precision_ci95": [
-    0.0,
-    0.793
+    0.326,
+    0.786
    ],
-   "recall": 0.0,
+   "precision_incl_duplicates": 0.929,
+   "recall": 0.364,
    "recall_ci95": [
-    0.0,
-    0.658
+    0.197,
+    0.57
    ],
-   "false_alerts_per_hour": 151.3
+   "false_alerts_per_hour": 22.8,
+   "duplicates_per_hour": 113.9
   }
  },
  "reduction": {
-  "analysed_s": 23.79,
-  "kept_s": 11.96,
-  "kept_event_s": 6.96,
-  "kept_ratio": 0.5027,
-  "kept_ratio_event_clips_only": 0.2926,
-  "gt_events": 2,
-  "event_retention": 1.0,
-  "event_retention_event_clips_only": 1.0,
-  "event_retention_via_matched_event": 0.0,
-  "retained": 2,
-  "retained_via_matched_event": 0
+  "analysed_s": 158.02,
+  "kept_s": 64.84,
+  "kept_event_s": 54.84,
+  "kept_ratio": 0.4103,
+  "kept_ratio_event_clips_only": 0.347,
+  "gt_events": 10,
+  "event_retention": 0.7,
+  "event_retention_event_clips_only": 0.7,
+  "event_retention_via_matched_event": 0.7,
+  "retained": 7,
+  "retained_via_matched_event": 7,
+  "note": "events = labelled safety events plus road-damage stretches (damage labels of any type that overlap or touch merged into one), the same units as the 'overall' detection row"
  },
  "latency": {
-  "frames": 115,
-  "ms_per_frame_p50": 300.6,
-  "ms_per_frame_p95": 460.1,
-  "wall_s_per_video_minute": 91.8,
-  "analysis_s_per_video_minute": 87.54,
-  "realtime_factor": 0.65,
+  "frames": 235,
+  "ms_per_frame_p50": 112.0,
+  "ms_per_frame_p95": 136.0,
+  "wall_s_per_video_minute": 11.57,
+  "analysis_s_per_video_minute": 10.44,
+  "realtime_factor": 5.19,
   "provider": "CPU",
   "execution_provider": "CPUExecutionProvider",
   "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
   "cpu_count": 4,
+  "load_avg_1min_before": 5.4,
   "threads": "onnxruntime default",
-  "note": "ms per frame = both detectors + tracking on one analysed frame; wall time includes decoding, proposals and writing the anonymised clips (ffmpeg)"
+  "note": "ms per frame = both detectors + tracking on one analysed frame; wall time includes decoding, proposals and writing the anonymised clips (ffmpeg); per minute of video depends on the frame rate (a 1 fps photo sequence has 5x fewer frames per minute than video sampled at 5 fps); a load average near or above cpu_count means other processes shared the CPU"
  },
  "per_video": [
   {
@@ -233,47 +300,303 @@
    "analysed_s": 23.79,
    "sample_fps": 4.8,
    "frames": 115,
+   "match_tolerance_s": 1.0,
    "telemetry": "tashkent_crossing.csv",
    "labelled_none": false,
+   "gt_labels": 2,
    "gt_events": 2,
-   "gt_events_after_analysed_span": 0,
-   "predictions": 1,
-   "tp": 0,
-   "kept_s": 11.96,
-   "kept_event_s": 6.96,
-   "kept_ratio": 0.5027,
+   "gt_labels_after_analysed_span": 0,
+   "predictions": 0,
+   "detection": {
+    "road_damage_any_type": {
+     "gt": 0,
+     "pred": 0,
+     "tp": 0,
+     "dup": 0,
+     "fp": 0,
+     "fn": 0,
+     "precision": null,
+     "precision_ci95": null,
+     "precision_incl_duplicates": null,
+     "recall": null,
+     "recall_ci95": null,
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 0.0
+    },
+    "safety": {
+     "gt": 2,
+     "pred": 0,
+     "tp": 0,
+     "dup": 0,
+     "fp": 0,
+     "fn": 2,
+     "precision": null,
+     "precision_ci95": null,
+     "precision_incl_duplicates": null,
+     "recall": 0.0,
+     "recall_ci95": [
+      0.0,
+      0.658
+     ],
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 0.0
+    },
+    "overall": {
+     "gt": 2,
+     "pred": 0,
+     "tp": 0,
+     "dup": 0,
+     "fp": 0,
+     "fn": 2,
+     "precision": null,
+     "precision_ci95": null,
+     "precision_incl_duplicates": null,
+     "recall": 0.0,
+     "recall_ci95": [
+      0.0,
+      0.658
+     ],
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 0.0
+    },
+    "overall_exact_types": {
+     "gt": 2,
+     "pred": 0,
+     "tp": 0,
+     "dup": 0,
+     "fp": 0,
+     "fn": 2,
+     "precision": null,
+     "precision_ci95": null,
+     "precision_incl_duplicates": null,
+     "recall": 0.0,
+     "recall_ci95": [
+      0.0,
+      0.658
+     ],
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 0.0
+    }
+   },
+   "kept_s": 5.0,
+   "kept_event_s": 0,
+   "kept_ratio": 0.2102,
+   "kept_ratio_event_clips_only": 0.0,
+   "event_retention": 0.0,
+   "event_retention_via_matched_event": 0.0,
    "clips": [
     {
      "t0": 4.98,
      "t1": 9.98,
      "kind": "baseline"
+    }
+   ],
+   "ms_per_frame_p50": 106.6,
+   "ms_per_frame_p95": 131.0,
+   "analysis_s": 13.06,
+   "clips_s": 0.58,
+   "wall_s": 13.64,
+   "wall_s_per_video_minute": 34.4
+  },
+  {
+   "video": "samples/tashkent_redmi.mp4",
+   "duration_s": 134.23,
+   "analysed_s": 134.23,
+   "sample_fps": 0.894,
+   "frames": 120,
+   "match_tolerance_s": 1.119,
+   "telemetry": "tashkent_redmi.csv",
+   "labelled_none": false,
+   "gt_labels": 20,
+   "gt_events": 8,
+   "gt_labels_after_analysed_span": 0,
+   "predictions": 14,
+   "detection": {
+    "road_damage_any_type": {
+     "gt": 8,
+     "pred": 14,
+     "tp": 7,
+     "dup": 7,
+     "fp": 0,
+     "fn": 1,
+     "precision": 0.5,
+     "precision_ci95": [
+      0.268,
+      0.732
+     ],
+     "precision_incl_duplicates": 1.0,
+     "recall": 0.875,
+     "recall_ci95": [
+      0.529,
+      0.978
+     ],
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 187.7
+    },
+    "safety": {
+     "gt": 0,
+     "pred": 0,
+     "tp": 0,
+     "dup": 0,
+     "fp": 0,
+     "fn": 0,
+     "precision": null,
+     "precision_ci95": null,
+     "precision_incl_duplicates": null,
+     "recall": null,
+     "recall_ci95": null,
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 0.0
+    },
+    "overall": {
+     "gt": 8,
+     "pred": 14,
+     "tp": 7,
+     "dup": 7,
+     "fp": 0,
+     "fn": 1,
+     "precision": 0.5,
+     "precision_ci95": [
+      0.268,
+      0.732
+     ],
+     "precision_incl_duplicates": 1.0,
+     "recall": 0.875,
+     "recall_ci95": [
+      0.529,
+      0.978
+     ],
+     "false_alerts_per_hour": 0.0,
+     "duplicates_per_hour": 187.7
+    },
+    "overall_exact_types": {
+     "gt": 20,
+     "pred": 14,
+     "tp": 8,
+     "dup": 5,
+     "fp": 1,
+     "fn": 12,
+     "precision": 0.571,
+     "precision_ci95": [
+      0.326,
+      0.786
+     ],
+     "precision_incl_duplicates": 0.929,
+     "recall": 0.4,
+     "recall_ci95": [
+      0.219,
+      0.613
+     ],
+     "false_alerts_per_hour": 26.8,
+     "duplicates_per_hour": 134.1
+    }
+   },
+   "kept_s": 59.84,
+   "kept_event_s": 54.84,
+   "kept_ratio": 0.4458,
+   "kept_ratio_event_clips_only": 0.4086,
+   "event_retention": 0.875,
+   "event_retention_via_matched_event": 0.875,
+   "clips": [
+    {
+     "t0": 0.0,
+     "t1": 10.45,
+     "kind": "event"
     },
     {
-     "t0": 16.83,
-     "t1": 23.79,
+     "t0": 11.42,
+     "t1": 14.92,
+     "kind": "event"
+    },
+    {
+     "t0": 32.27,
+     "t1": 37.27,
+     "kind": "baseline"
+    },
+    {
+     "t0": 46.1,
+     "t1": 49.6,
+     "kind": "event"
+    },
+    {
+     "t0": 60.64,
+     "t1": 71.97,
+     "kind": "event"
+    },
+    {
+     "t0": 76.3,
+     "t1": 80.92,
+     "kind": "event"
+    },
+    {
+     "t0": 83.01,
+     "t1": 88.75,
+     "kind": "event"
+    },
+    {
+     "t0": 100.91,
+     "t1": 106.64,
+     "kind": "event"
+    },
+    {
+     "t0": 109.86,
+     "t1": 116.71,
+     "kind": "event"
+    },
+    {
+     "t0": 131.11,
+     "t1": 134.23,
      "kind": "event"
     }
    ],
-   "ms_per_frame_p50": 300.6,
-   "ms_per_frame_p95": 460.2,
-   "analysis_s": 34.71,
-   "clips_s": 1.68,
-   "wall_s": 36.4
+   "ms_per_frame_p50": 116.7,
+   "ms_per_frame_p95": 138.2,
+   "analysis_s": 14.44,
+   "clips_s": 2.38,
+   "wall_s": 16.82,
+   "wall_s_per_video_minute": 7.52
   }
  ],
  "details": [
   {
    "video": "samples/tashkent_crossing.mp4",
-   "ground_truth": [
+   "events": [
+    {
+     "type": "vru_near_path",
+     "types": [
+      "vru_near_path"
+     ],
+     "start_s": 21.0,
+     "end_s": 22.8,
+     "label_lines": [
+      2
+     ],
+     "matched_pred": null,
+     "retained": false,
+     "retained_via_matched_event": false
+    },
+    {
+     "type": "forward_collision_risk",
+     "types": [
+      "forward_collision_risk"
+     ],
+     "start_s": 23.4,
+     "end_s": 23.79,
+     "label_lines": [
+      3
+     ],
+     "matched_pred": null,
+     "retained": false,
+     "retained_via_matched_event": false
+    }
+   ],
+   "labels": [
     {
      "line": 2,
      "type": "vru_near_path",
      "start_s": 21.0,
      "end_s": 22.8,
-     "matched_pred": null,
-     "exact_type_match": false,
-     "retained": true,
-     "retained_via_matched_event": false,
+     "matched_pred_exact_type": null,
      "note": "Traffic officer (yellow vest, baton) standing on the lane line directly ahead; we pull off at 6-16 km/h and pass him on our right at about 1-2 m. From 21.0 s he is close in front (box ~55 px tall and growing, centred in our path) until he is beside our right front corner at ~22.8 s. Before 21 s he is 30-40 px tall and far away (not close). Not a hazard he caused (he is directing traffic) but it is exactly the geometric definition of the type."
     },
     {
@@ -281,39 +604,583 @@
      "type": "forward_collision_risk",
      "start_s": 23.4,
      "end_s": 23.79,
-     "matched_pred": null,
-     "exact_type_match": false,
-     "retained": true,
-     "retained_via_matched_event": false,
+     "matched_pred_exact_type": null,
      "note": "Collision in our forward path: a motorcycle (25-50 px) enters from the left at ~23.4 s, crosses ahead of us and strikes the left side of the car ahead at ~23.75 s; the video ends at 23.79 s. Judgement call: the taxonomy has no type for a crash between two other road users; forward_collision_risk is the closest. Strictly, our own time-to-contact is not under 3 s (the car ahead was pulling away until ~23.3 s)."
+    }
+   ],
+   "predictions": []
+  },
+  {
+   "video": "samples/tashkent_redmi.mp4",
+   "events": [
+    {
+     "type": "road_damage",
+     "types": [
+      "alligator_crack",
+      "longitudinal_crack",
+      "transverse_crack"
+     ],
+     "start_s": 0.0,
+     "end_s": 14.54,
+     "label_lines": [
+      5,
+      7,
+      8,
+      6
+     ],
+     "matched_pred": 0,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "pothole"
+     ],
+     "start_s": 40.27,
+     "end_s": 41.39,
+     "label_lines": [
+      9
+     ],
+     "matched_pred": null,
+     "retained": false,
+     "retained_via_matched_event": false
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "longitudinal_crack"
+     ],
+     "start_s": 46.98,
+     "end_s": 53.69,
+     "label_lines": [
+      10
+     ],
+     "matched_pred": 3,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "longitudinal_crack"
+     ],
+     "start_s": 60.4,
+     "end_s": 64.88,
+     "label_lines": [
+      11
+     ],
+     "matched_pred": 4,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "alligator_crack",
+      "longitudinal_crack",
+      "transverse_crack"
+     ],
+     "start_s": 67.11,
+     "end_s": 72.71,
+     "label_lines": [
+      12,
+      13,
+      14
+     ],
+     "matched_pred": 5,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "alligator_crack",
+      "longitudinal_crack",
+      "transverse_crack"
+     ],
+     "start_s": 76.06,
+     "end_s": 87.25,
+     "label_lines": [
+      15,
+      17,
+      16,
+      18
+     ],
+     "matched_pred": 6,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "longitudinal_crack",
+      "transverse_crack"
+     ],
+     "start_s": 102.91,
+     "end_s": 111.86,
+     "label_lines": [
+      19,
+      20
+     ],
+     "matched_pred": 10,
+     "retained": true,
+     "retained_via_matched_event": true
+    },
+    {
+     "type": "road_damage",
+     "types": [
+      "alligator_crack",
+      "longitudinal_crack",
+      "transverse_crack"
+     ],
+     "start_s": 115.21,
+     "end_s": 133.11,
+     "label_lines": [
+      21,
+      22,
+      23,
+      24
+     ],
+     "matched_pred": 12,
+     "retained": true,
+     "retained_via_matched_event": true
+    }
+   ],
+   "labels": [
+    {
+     "line": 5,
+     "type": "alligator_crack",
+     "start_s": 0.0,
+     "end_s": 7.83,
+     "matched_pred_exact_type": 0,
+     "note": "#0-#7: interconnected fatigue (alligator) cracking across our lane and both neighbouring lanes, near and mid range"
+    },
+    {
+     "line": 6,
+     "type": "alligator_crack",
+     "start_s": 12.3,
+     "end_s": 13.42,
+     "matched_pred_exact_type": null,
+     "note": "#11-#12: alligator cracking in the middle of our lane (#8-#10 show long and transverse cracks but no clear network)"
+    },
+    {
+     "line": 7,
+     "type": "longitudinal_crack",
+     "start_s": 0.0,
+     "end_s": 14.54,
+     "matched_pred_exact_type": 1,
+     "note": "#0-#13: long cracks along our lane in every photo of the first stretch"
+    },
+    {
+     "line": 8,
+     "type": "transverse_crack",
+     "start_s": 0.0,
+     "end_s": 14.54,
+     "matched_pred_exact_type": null,
+     "note": "#0-#13: transverse cracks across our lane in most photos (clearest #0, #6 and #7 where a crack/joint crosses all lanes, #13)"
+    },
+    {
+     "line": 9,
+     "type": "pothole",
+     "start_s": 40.27,
+     "end_s": 41.39,
+     "matched_pred_exact_type": null,
+     "note": "#36-#37: small pothole/spall (~40 px) at the left of our lane just past the stop line of the crossing, clearest in #37. #36 is image 1293931998053736 (earlier image-level label alligator_crack + pothole): I confirm the small pothole-like spall with cracks around it but see no alligator network in that photo"
+    },
+    {
+     "line": 10,
+     "type": "longitudinal_crack",
+     "start_s": 46.98,
+     "end_s": 53.69,
+     "matched_pred_exact_type": 3,
+     "note": "#42-#48: meandering crack in the middle of our lane (#42-#43), continuing along the left lane line (#44-#48)"
+    },
+    {
+     "line": 11,
+     "type": "longitudinal_crack",
+     "start_s": 60.4,
+     "end_s": 64.88,
+     "matched_pred_exact_type": 4,
+     "note": "#54-#58: cracks in our lane, clearest #56 (left wheel track) and #58 (along the lane line); #55 and #57 faint"
+    },
+    {
+     "line": 12,
+     "type": "longitudinal_crack",
+     "start_s": 67.11,
+     "end_s": 72.71,
+     "matched_pred_exact_type": 5,
+     "note": "#60-#65: long cracks in our lane and the right lane"
+    },
+    {
+     "line": 13,
+     "type": "alligator_crack",
+     "start_s": 69.35,
+     "end_s": 72.71,
+     "matched_pred_exact_type": null,
+     "note": "#62-#65: block/fatigue crack network in the right neighbouring lane (#62, #63, #65)"
+    },
+    {
+     "line": 14,
+     "type": "transverse_crack",
+     "start_s": 70.47,
+     "end_s": 72.71,
+     "matched_pred_exact_type": null,
+     "note": "#63-#65: transverse cracks across the right half of the road"
+    },
+    {
+     "line": 15,
+     "type": "longitudinal_crack",
+     "start_s": 76.06,
+     "end_s": 87.25,
+     "matched_pred_exact_type": 6,
+     "note": "#68-#78: cracks in our lane and the right lane on the approach to the underpass, clearest #70, #71, #76, #78"
+    },
+    {
+     "line": 16,
+     "type": "alligator_crack",
+     "start_s": 77.18,
+     "end_s": 78.3,
+     "matched_pred_exact_type": null,
+     "note": "#69-#70: crack network in the right lane"
+    },
+    {
+     "line": 17,
+     "type": "transverse_crack",
+     "start_s": 76.06,
+     "end_s": 81.66,
+     "matched_pred_exact_type": null,
+     "note": "#68-#73: transverse cracks, clearest #72 (across our lane and the left lane)"
+    },
+    {
+     "line": 18,
+     "type": "transverse_crack",
+     "start_s": 86.13,
+     "end_s": 86.13,
+     "matched_pred_exact_type": null,
+     "note": "#77: transverse crack across our lane and the right lane, under the bridge"
+    },
+    {
+     "line": 19,
+     "type": "longitudinal_crack",
+     "start_s": 102.91,
+     "end_s": 111.86,
+     "matched_pred_exact_type": 10,
+     "note": "#92-#100: after the tunnel, long cracks in our lane (clearest #92, #93, #96, #98, #100)"
+    },
+    {
+     "line": 20,
+     "type": "transverse_crack",
+     "start_s": 106.26,
+     "end_s": 109.62,
+     "matched_pred_exact_type": null,
+     "note": "#95-#98: transverse cracks across our lane, clearest #98"
+    },
+    {
+     "line": 21,
+     "type": "longitudinal_crack",
+     "start_s": 115.21,
+     "end_s": 133.11,
+     "matched_pred_exact_type": 12,
+     "note": "#103-#119: long cracks in our lane or the neighbouring lanes in nearly every photo of the last stretch (clearest #106, #111, #115, #117-#119)"
+    },
+    {
+     "line": 22,
+     "type": "transverse_crack",
+     "start_s": 121.92,
+     "end_s": 123.04,
+     "matched_pred_exact_type": null,
+     "note": "#109-#110: transverse cracks across our lane"
+    },
+    {
+     "line": 23,
+     "type": "alligator_crack",
+     "start_s": 123.04,
+     "end_s": 124.16,
+     "matched_pred_exact_type": null,
+     "note": "#110-#111: crack network in our lane (#111) and the left lane (#110)"
+    },
+    {
+     "line": 24,
+     "type": "alligator_crack",
+     "start_s": 129.75,
+     "end_s": 131.99,
+     "matched_pred_exact_type": null,
+     "note": "#116-#118: alligator cracking in the middle of our lane, clearest #117-#118"
     }
    ],
    "predictions": [
     {
      "index": 0,
-     "type": "cut_in",
-     "t_start": 20.83,
-     "t_end": 21.67,
-     "t_peak": 21.67,
-     "conf": 0.67,
-     "severity": 0.61,
-     "status": "FP",
-     "matched_gt_line": null,
-     "clip_id": "f9d708b4563d4057",
+     "type": "alligator_crack",
+     "t_start": 0.0,
+     "t_end": 5.59,
+     "t_peak": 0.0,
+     "conf": 0.49,
+     "severity": 0.493,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      5,
+      7,
+      8,
+      6
+     ],
+     "clip_id": "3d50928d01f048e8",
      "evidence": {
-      "road_user": "car",
-      "from_side": "right",
-      "lateral_px": -41.8,
-      "over_s": 0.83
+      "frames_seen": 3,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 1,
+     "type": "longitudinal_crack",
+     "t_start": 8.95,
+     "t_end": 8.95,
+     "t_peak": 8.95,
+     "conf": 0.38,
+     "severity": 0.206,
+     "status": "DUP",
+     "status_exact_type": "TP",
+     "matched_label_lines": null,
+     "clip_id": "3d50928d01f048e8",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 2,
+     "type": "longitudinal_crack",
+     "t_start": 13.42,
+     "t_end": 13.42,
+     "t_peak": 13.42,
+     "conf": 0.38,
+     "severity": 0.205,
+     "status": "DUP",
+     "status_exact_type": "DUP",
+     "matched_label_lines": null,
+     "clip_id": "6d63ce854de447e7",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 3,
+     "type": "longitudinal_crack",
+     "t_start": 48.1,
+     "t_end": 48.1,
+     "t_peak": 48.1,
+     "conf": 0.42,
+     "severity": 0.192,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      10
+     ],
+     "clip_id": "9c7a0e5b0a194d26",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 4,
+     "type": "longitudinal_crack",
+     "t_start": 62.64,
+     "t_end": 68.23,
+     "t_peak": 62.64,
+     "conf": 0.57,
+     "severity": 0.22,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      11
+     ],
+     "clip_id": "aee2c860518e4c80",
+     "evidence": {
+      "frames_seen": 4,
+      "tracks": 3
+     }
+    },
+    {
+     "index": 5,
+     "type": "longitudinal_crack",
+     "t_start": 70.47,
+     "t_end": 70.47,
+     "t_peak": 70.47,
+     "conf": 0.48,
+     "severity": 0.195,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      12,
+      13,
+      14
+     ],
+     "clip_id": "aee2c860518e4c80",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 6,
+     "type": "longitudinal_crack",
+     "t_start": 78.3,
+     "t_end": 79.42,
+     "t_peak": 78.3,
+     "conf": 0.51,
+     "severity": 0.211,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      15,
+      17,
+      16,
+      18
+     ],
+     "clip_id": "bc2bd777abf2425f",
+     "evidence": {
+      "frames_seen": 2,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 7,
+     "type": "longitudinal_crack",
+     "t_start": 85.01,
+     "t_end": 85.01,
+     "t_peak": 85.01,
+     "conf": 0.49,
+     "severity": 0.211,
+     "status": "DUP",
+     "status_exact_type": "DUP",
+     "matched_label_lines": null,
+     "clip_id": "953a11fda12d48bd",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 8,
+     "type": "longitudinal_crack",
+     "t_start": 87.25,
+     "t_end": 87.25,
+     "t_peak": 87.25,
+     "conf": 0.36,
+     "severity": 0.171,
+     "status": "DUP",
+     "status_exact_type": "DUP",
+     "matched_label_lines": null,
+     "clip_id": "953a11fda12d48bd",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 9,
+     "type": "longitudinal_crack",
+     "t_start": 102.91,
+     "t_end": 102.91,
+     "t_peak": 102.91,
+     "conf": 0.46,
+     "severity": 0.196,
+     "status": "DUP",
+     "status_exact_type": "DUP",
+     "matched_label_lines": null,
+     "clip_id": "6b916cc83dea45ff",
+     "evidence": {
+      "frames_seen": 3,
+      "tracks": 3
+     }
+    },
+    {
+     "index": 10,
+     "type": "longitudinal_crack",
+     "t_start": 105.14,
+     "t_end": 105.14,
+     "t_peak": 105.14,
+     "conf": 0.36,
+     "severity": 0.191,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      19,
+      20
+     ],
+     "clip_id": "6b916cc83dea45ff",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 11,
+     "type": "transverse_crack",
+     "t_start": 111.86,
+     "t_end": 111.86,
+     "t_peak": 111.86,
+     "conf": 0.37,
+     "severity": 0.238,
+     "status": "DUP",
+     "status_exact_type": "FP",
+     "matched_label_lines": null,
+     "clip_id": "0dfa27e467744340",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 12,
+     "type": "longitudinal_crack",
+     "t_start": 115.21,
+     "t_end": 115.21,
+     "t_peak": 115.21,
+     "conf": 0.36,
+     "severity": 0.204,
+     "status": "TP",
+     "status_exact_type": "TP",
+     "matched_label_lines": [
+      21,
+      22,
+      23,
+      24
+     ],
+     "clip_id": "0dfa27e467744340",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
+     }
+    },
+    {
+     "index": 13,
+     "type": "longitudinal_crack",
+     "t_start": 133.11,
+     "t_end": 133.11,
+     "t_peak": 133.11,
+     "conf": 0.39,
+     "severity": 0.19,
+     "status": "DUP",
+     "status_exact_type": "DUP",
+     "matched_label_lines": null,
+     "clip_id": "9f03ffd4f4bd45ff",
+     "evidence": {
+      "frames_seen": 1,
+      "tracks": 1
      }
     }
    ]
   }
  ],
  "caveats": [
-  "Tiny test set: 1 video(s), 23.79 s of video, 2 labelled event(s); 95 % intervals are given for every rate.",
-  "Labels by the team (one annotator, no second-annotator agreement), from frames reviewed every 0.5 s and frame by frame around events; judgement calls are written in the label file's note column.",
-  "Single camera: the team's own dashcam, daylight, one city; no other cameras, mounts, night or weather.",
+  "Tiny test set: 2 video(s), 158.02 s of video, 10 labelled event(s); 95 % intervals are given for every rate.",
+  "Labels by the team (one annotator, no second-annotator agreement), from frames reviewed every 0.5 s (video) or every photo (photo sequences) and frame by frame around events; judgement calls are in the label file's note column. On a road cracked almost everywhere, which crack counts as 'clearly visible' is subjective: the family-level road-damage row is more robust than the per-type rows.",
+  "Two sources only: the team's dashcam (one 24 s clip) and one phone's Mapillary photo sequence (134 s, one photo every 1.1 s); one city, daylight; no night, rain or other mounts.",
   "False alerts per hour are extrapolated from the short labelled footage: one false alert in a minute of video reads as 60 per hour.",
   "kept_ratio includes the 5 s random baseline clip the product keeps per trip; event-only figures are reported next to it."
  ]

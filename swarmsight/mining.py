@@ -141,7 +141,9 @@ class EventMiner:
         max_frames = int(max_seconds * fps)
         n_expected = min(n_total, max_frames) if n_total > 0 else max_frames
         utrack = ByteTracker(high_thr=0.45, low_thr=0.15, new_track_thr=0.5, track_buffer=10, min_hits=2)
-        dtrack = ByteTracker(high_thr=0.35, low_thr=0.15, new_track_thr=0.35, match_thr=0.95, track_buffer=4, min_hits=2)
+        # a photo sequence (a frame every >= 0.4 s, 5-15 m apart) rarely shows one crack twice: confirm damage at once
+        photos = fps / step < 2.5
+        dtrack = ByteTracker(high_thr=0.35, low_thr=0.15, new_track_thr=0.35, match_thr=0.95, track_buffer=4, min_hits=1 if photos else 2)
         gnames = {v: k for k, v in GROUP_IDS.items()}
         labels: dict[int, Counter] = defaultdict(Counter)
         frames, lat = [], []
@@ -228,7 +230,7 @@ class EventMiner:
             items.sort()
             groups: list[list] = []
             for it in items:
-                if groups and it[0] - groups[-1][-1][1] <= 1.0:
+                if groups and it[0] - groups[-1][-1][1] <= max(1.0, 1.5 * dt):  # one stretch of damage, one event
                     groups[-1].append(it)
                 else:
                     groups.append([it])
@@ -274,7 +276,7 @@ class EventMiner:
                     out.append(Proposal("vru_near_path", a, b, tp, max(o["conf"] for _, o in inside),
                                         round(float(np.clip(0.4 + size, 0.4, 1)), 3), op["bbox"], [tid],
                                         {"road_user": cls, "frames_seen": len(inside)}))
-            if cls in VEHICLES:
+            if cls in VEHICLES and dt < 0.4:  # one comparison 1 s apart cannot tell a lane change from a bend
                 for i, (t, o) in enumerate(obs):
                     bw, bh = o["bbox"][2] - o["bbox"][0], o["bbox"][3] - o["bbox"][1]
                     if not (o["corridor"] and o["bbox"][3] >= 0.5 * h and bh >= 0.08 * h):
@@ -290,7 +292,7 @@ class EventMiner:
                         b0 = o0["bbox"]
                         shifted = [b0[0] + (m if n >= 2 else 0.0), b0[1], b0[2] + (m if n >= 2 else 0.0), b0[3]]
                         off0 = _lane_offset(shifted, w)
-                        if abs(off0) - abs(off) >= 0.5 and abs(off0) >= 1.0:
+                        if abs(off0) - abs(off) >= 0.5 and abs(off0) >= 1.6:  # from the next lane (~2 widths off)
                             out.append(Proposal("cut_in", t0, t, t, o["conf"], round(float(np.clip(0.5 + bh / h, 0.5, 1)), 3),
                                                 o["bbox"], [tid], {"road_user": cls, "from_side": "left" if off0 < 0 else "right",
                                                                    "lane_offset_widths": [round(off0, 2), round(off, 2)],

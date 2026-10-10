@@ -191,13 +191,14 @@ def time_to_contact(track: Track, min_span: float = 0.4) -> float | None:
     Uses a least-squares fit of log(height) over the track history; no calibration needed.
     Returns seconds, or None if the object is not approaching or history is too short.
     """
-    if len(track.history) < 4:
+    hist = [h for h in track.history if h[0] >= track.history[-1][0] - 3.0]  # only the last 3 s: a car that stopped is not approaching
+    if len(hist) < 4:
         return None
-    ts = np.array([h[0] for h in track.history])
+    ts = np.array([h[0] for h in hist])
     if ts[-1] - ts[0] < min_span:
         return None
-    hs = np.array([max(h[1][3] - h[1][1], 1.0) for h in track.history])
-    ws = np.array([max(h[1][2] - h[1][0], 1.0) for h in track.history])
+    hs = np.array([max(h[1][3] - h[1][1], 1.0) for h in hist])
+    ws = np.array([max(h[1][2] - h[1][0], 1.0) for h in hist])
     s = np.log(np.sqrt(hs * ws))
     A = np.vstack([ts - ts[-1], np.ones_like(ts)]).T
     (rate, _), *_ = np.linalg.lstsq(A, s, rcond=None)  # d log(s)/dt
