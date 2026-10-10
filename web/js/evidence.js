@@ -42,7 +42,7 @@ export default async function evidence(root) {
     const o = ev.detection?.overall || {};
     const vids = ev.videos || [], tot = vids.reduce((a, v) => a + (v.duration_s || 0), 0);
     evEl.append(h(`<div class="nums4">
-      ${figure(o.precision != null ? o.precision.toFixed(2) : null, '', 'event precision', `${o.tp ?? '—'} of ${o.pred ?? '—'} mined events are real`)}
+      ${figure(o.fp != null && o.pred ? `${o.pred - o.fp}/${o.pred}` : null, '', 'mined events that are real', `${o.tp} new · ${o.dup ?? 0} repeat sightings of an event already found · ${o.fp} false`)}
       ${figure(o.recall != null ? o.recall.toFixed(2) : null, '', 'event recall', `${o.tp ?? '—'} of ${o.gt ?? '—'} labelled events found`)}
       ${figure(o.false_alerts_per_hour != null ? Math.round(o.false_alerts_per_hour) : null, '/h', 'false alerts per hour of video', 'every one goes to review, none is published')}
       ${figure(ev.reduction?.kept_ratio_event_clips_only != null ? (100 * ev.reduction.kept_ratio_event_clips_only).toFixed(0) : null, '%', 'of video kept in event clips', ev.reduction?.event_retention != null ? `${pct(ev.reduction.event_retention)} of labelled events inside them · +5 s baseline per trip` : '')}
