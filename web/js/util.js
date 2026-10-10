@@ -20,7 +20,15 @@ export async function api(path, opts = {}) {
     o.headers = { ...(o.headers || {}), 'Content-Type': 'application/json' };
     delete o.json;
   }
+  let tok = null;
+  try { tok = localStorage.getItem('swarmsight.modtoken'); } catch {}
+  if (tok) o.headers = { ...(o.headers || {}), 'X-Moderator-Token': tok };
   const r = await fetch(path, o);
+  if (r.status === 401 && !opts._retried) {
+    // moderator actions on a protected deployment: ask once, remember in this browser
+    const t = prompt('Moderator token (set by the team for this deployment):');
+    if (t) { try { localStorage.setItem('swarmsight.modtoken', t.trim()); } catch {} return api(path, { ...opts, _retried: true }); }
+  }
   const ct = r.headers.get('content-type') || '';
   const body = ct.includes('json') ? await r.json() : await r.text();
   if (!r.ok) throw new Error(typeof body === 'object' ? (body.detail ? JSON.stringify(body.detail) : JSON.stringify(body)) : body);

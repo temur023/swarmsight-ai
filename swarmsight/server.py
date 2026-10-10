@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
+import hmac
 import io
 import json
 import os
@@ -20,7 +21,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 import numpy as np
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
+from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
@@ -148,6 +149,14 @@ def _json_default(o):
     if isinstance(o, np.ndarray):
         return o.tolist()
     raise TypeError(type(o))
+
+
+def require_moderator(x_moderator_token: str | None = Header(None)):
+    """Moderator actions (review, manual location, dataset export) need SWARMSIGHT_MODERATOR_TOKEN when it is set, so
+    a stranger on the public site cannot reject or relabel events; uploads and reading stay open."""
+    want = os.environ.get("SWARMSIGHT_MODERATOR_TOKEN", "")
+    if want and not hmac.compare_digest(want, x_moderator_token or ""):
+        raise HTTPException(401, "moderator token required")
 
 
 # ----------------------------------------------------------------------------- jobs
@@ -473,7 +482,7 @@ class ReviewIn(BaseModel):
     reviewer: str = "moderator"
 
 
-@app.post("/api/v1/observations/{oid}/review")
+@app.post("/api/v1/observations/{oid}/review", dependencies=[Depends(require_moderator)])
 def review_observation(oid: int, r: ReviewIn):
     try:
         S.fusion.review(oid, r.action, r.reviewer or "moderator", r.note, r.label)
@@ -491,7 +500,7 @@ class LocateIn(BaseModel):
     reviewer: str = "moderator"
 
 
-@app.post("/api/v1/observations/{oid}/location")
+@app.post("/api/v1/observations/{oid}/location", dependencies=[Depends(require_moderator)])
 def locate_observation(oid: int, b: LocateIn):
     try:
         S.fusion.locate(oid, b.lat, b.lon, b.uncertainty_m, b.reviewer)
@@ -562,7 +571,7 @@ class ExportIn(BaseModel):
     include_unreviewed: bool = False
 
 
-@app.post("/api/v1/datasets/exports")
+@app.post("/api/v1/datasets/exports", dependencies=[Depends(require_moderator)])
 def create_export(b: ExportIn):
     return export_dataset(S.store, MEDIA_DIR, EXPORT_DIR, b.include_unreviewed)
 
@@ -588,6 +597,7 @@ def health():
         "hardware": {"cpu_count": os.cpu_count(), "machine": platform.machine(), "python": platform.python_version()},
         "frame_ms": {"n": len(v), "p50": round(float(np.median(v)), 1), "p95": round(float(np.percentile(v, 95)), 1)} if v else None,
         "uptime_s": round(time.time() - S.started),
+        "moderation": "token required" if os.environ.get("SWARMSIGHT_MODERATOR_TOKEN") else "open (demo)",
     }
 
 

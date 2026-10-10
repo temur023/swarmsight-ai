@@ -83,6 +83,8 @@ image = (
         "SWARMSIGHT_THREADS": os.environ.get("SWARMSIGHT_THREADS", "4"),
         "SWARMSIGHT_JOB_WORKERS": os.environ.get("SWARMSIGHT_JOB_WORKERS", "2"),
         "SWARMSIGHT_MAX_VIDEO_MB": os.environ.get("SWARMSIGHT_MAX_VIDEO_MB", "300"),
+        # optional: review, manual location and export then need this token (the site asks for it once)
+        "SWARMSIGHT_MODERATOR_TOKEN": os.environ.get("SWARMSIGHT_MODERATOR_TOKEN", ""),
     })
     # project files: added at container start (copy=False), so these steps must stay last
     .add_local_dir(HERE / "swarmsight", f"{APP_DIR}/swarmsight", ignore=_ignore)

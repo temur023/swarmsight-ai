@@ -161,3 +161,12 @@ def test_upload_short_trip_with_a_pinned_location(client):
     assert rep["trip"]["gps_source"] == "single_point" and rep["trip"]["analysed_s"] <= 5.5
     assert rep["trip"]["device_id"].endswith("…") and "test-phone" not in rep["trip"]["device_id"]
     assert not any((RUNTIME / "uploads").iterdir()), "the upload is deleted after processing"
+
+
+def test_moderator_token_protects_writes_when_set(client, monkeypatch):
+    monkeypatch.setenv("SWARMSIGHT_MODERATOR_TOKEN", "s3cret")
+    assert client.post("/api/v1/observations/1/review", json={"action": "confirm"}).status_code == 401
+    assert client.post("/api/v1/datasets/exports", json={}).status_code == 401
+    r = client.post("/api/v1/observations/999999/review", json={"action": "confirm"}, headers={"X-Moderator-Token": "s3cret"})
+    assert r.status_code == 404
+    assert client.get("/api/v1/health").json()["moderation"] == "token required"

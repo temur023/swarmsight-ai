@@ -4,6 +4,7 @@ name: Deploy to Modal (GPU)
 # Needs two repository secrets (Settings -> Secrets and variables -> Actions), from modal.com -> Settings -> API Tokens:
 #   MODAL_TOKEN_ID      ak-...
 #   MODAL_TOKEN_SECRET  as-...
+# Optional: SWARMSIGHT_MODERATOR_TOKEN, a password moderators type once in the site to review and export.
 # The deployment is tagged with the commit it was built from, so the site and the submitted commit can be matched.
 
 on:
@@ -43,6 +44,7 @@ jobs:
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
           MODAL_MIN_CONTAINERS: ${{ inputs.min_containers }}
           MODAL_GPU: ${{ inputs.gpu }}
+          SWARMSIGHT_MODERATOR_TOKEN: ${{ secrets.SWARMSIGHT_MODERATOR_TOKEN }}
         run: |
           set -o pipefail
           modal deploy modal_app.py --strategy recreate --tag "${GITHUB_SHA::7}" 2>&1 | tee deploy.log
