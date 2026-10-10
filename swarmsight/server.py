@@ -392,13 +392,16 @@ def samples():
 
 @app.post("/api/v1/samples/{name}/run")
 def run_sample(name: str, device_id: str | None = None, rights_scope: str = "road_and_dataset"):
-    """Run a bundled sample trip through exactly the same pipeline as an upload (for visitors without a video)."""
+    """Run a bundled sample trip through exactly the same pipeline as an upload (for visitors without a video).
+
+    The sample was filmed by one camera, so every run of it counts as that one device, whoever clicks: re-running
+    the same footage must never look like independent corroboration."""
     S.load()
     s = next((x for x in samples()["samples"] if x["id"] == name), None)
     if not s:
         raise HTTPException(404, "unknown sample")
     tr = parse_track((SAMPLES_DIR / s["track"]).read_bytes(), s["track"], s.get("track_offset_s", 0.0)) if s.get("track") else None
-    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, device_id or "sample-runner", rights_scope, None, 120.0, keep_upload=True)
+    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, f"sample:{name}", rights_scope, None, 120.0, keep_upload=True)
 
 
 def trip_report(trip_id: str) -> dict:
@@ -421,7 +424,7 @@ def trip_report(trip_id: str) -> dict:
 @app.get("/api/v1/trips")
 def list_trips(limit: int = 30):
     rows = S.store.query("SELECT id, filename, created_at, status, rights_scope, gps_source, duration_s, analysed_s, kept_s, n_events "
-                         "FROM trips ORDER BY created_at DESC LIMIT ?", (min(limit, 200),))
+                         "FROM trips ORDER BY created_at DESC LIMIT ?", (max(1, min(limit, 200)),))
     return {"trips": rows}
 
 
@@ -439,7 +442,7 @@ def list_observations(status: str = "needs_review", kind: str = "all", limit: in
     if kind in ("road", "safety", "baseline"):
         q += " AND o.kind=?"
         args.append(kind)
-    rows = S.store.query(q + " ORDER BY o.created_at DESC, o.t_peak LIMIT ?", args + [min(limit, 500)])
+    rows = S.store.query(q + " ORDER BY o.created_at DESC, o.t_peak LIMIT ?", args + [max(1, min(limit, 500))])
     clips = {c["id"]: c for c in S.store.query("SELECT id, t0, t1, file, size FROM clips")}
     for o in rows:
         o.pop("embedding", None)
@@ -509,8 +512,20 @@ def safety_reviews(limit: int = 100):
 @app.get("/api/v1/events")
 def list_events(status: str = "verified", bbox: str | None = None):
     st = tuple(s for s in status.split(",") if s in ("candidate", "corroborated", "verified", "rejected", "expired")) or ("verified",)
-    bb = [float(x) for x in bbox.split(",")] if bbox else None
-    return S.fusion.geojson(st, bb)
+    return S.fusion.geojson(st, _bbox(bbox))
+
+
+def _bbox(raw: str | None) -> list[float] | None:
+    """min_lon,min_lat,max_lon,max_lat"""
+    if not raw:
+        return None
+    try:
+        bb = [float(x) for x in raw.split(",")]
+    except ValueError:
+        bb = []
+    if len(bb) != 4:
+        raise HTTPException(400, "bbox: four numbers, min_lon,min_lat,max_lon,max_lat")
+    return bb
 
 
 @app.get("/api/v1/events/{eid}")

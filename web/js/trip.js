@@ -35,7 +35,7 @@ async function upload(root) {
       <div class="stack">
         <label class="drop" id="drop"><input type="file" accept="video/*,image/*">
           <b>Drop a trip video or a road photo</b><span class="again">Drop another trip or photo</span>
-          <span class="faint">MP4, MOV, WEBM up to 300 MB · the first 2 minutes are analysed · or a JPG/PNG road photo</span></label>
+          <span class="faint">MP4, MOV, WEBM up to 300 MB (under 100 MB uploads fastest) · the first 2 minutes are analysed · or a JPG/PNG road photo</span></label>
         <div id="run" class="hidden stack">
           <div class="instrument" id="stage">
             <video id="vid" muted playsinline class="hidden"></video><img id="img" class="hidden" alt="uploaded photo">
@@ -138,7 +138,7 @@ async function upload(root) {
     if (!tr && g) { fd.append('lat', g.lat); fd.append('lon', g.lon); fd.append('gps_accuracy_m', g.acc || 15); }
     const isImg = file.type.startsWith('image') || /\.(jpe?g|png|webp)$/i.test(file.name);
     ui.querySelector('#run').classList.remove('hidden');
-    stxt.textContent = `uploading ${(file.size / 1e6).toFixed(1)} MB…`;
+    stxt.textContent = `uploading ${(file.size / 1e6).toFixed(1)} MB…${file.size > 150e6 ? ' a large file: on a slow connection, trim it to the minute that matters' : ''}`;
     try {
       const res = await api('/api/v1/trips', { method: 'POST', body: fd });
       const url = URL.createObjectURL(file);

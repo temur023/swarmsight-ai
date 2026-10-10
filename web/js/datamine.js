@@ -1,6 +1,7 @@
 import { api, esc, figure, fmtTime, h, media, pct, typeName } from './util.js';
 
 export default async function datamine(root) {
+  let lastMsg = '';
   const ui = h(`<div class="wrap">
     <section class="page-head">
       <span class="label">04 · DataMine</span>
@@ -42,18 +43,18 @@ export default async function datamine(root) {
         pre-annotations, not checked by a person: we do not call any sample "benchmark-ready".</p></div></div>
       <div class="row"><button class="btn primary" id="exp">Export reviewed samples</button>
         <label class="check"><input type="checkbox" id="raw"> include unreviewed (raw candidates)</label></div>
-      <p class="mono faint" id="emsg" style="font-size:.76rem;margin-top:.5rem"></p>
-      <table class="tbl" style="margin-top:1rem"><thead><tr><th>Version</th><th>Created</th><th class="r">Samples</th><th>Contents</th><th></th></tr></thead>
+      <p class="mono faint" id="emsg" style="font-size:.76rem;margin-top:.5rem">${esc(lastMsg)}</p>
+      <div class="scroll-x" style="margin-top:1rem"><table class="tbl"><thead><tr><th>Version</th><th>Created</th><th class="r">Samples</th><th>Contents</th><th></th></tr></thead>
         <tbody>${(s.exports || []).map(e => `<tr><td class="mono">${esc(e.version)}</td><td>${fmtTime(e.created_at)}</td><td class="r">${e.n_samples}</td>
           <td class="mono faint" style="font-size:.76rem">${esc(Object.entries(e.summary.by_label || {}).map(([k, v]) => `${k} ${v}`).join(' · '))}${e.summary.include_unreviewed ? ' · incl. unreviewed' : ''}</td>
-          <td><a class="btn" href="/api/v1/datasets/exports/${encodeURIComponent(e.version)}">Download · ${(e.summary.bytes / 1e6).toFixed(1)} MB</a></td></tr>`).join('') || '<tr><td colspan="5" class="faint">No exports yet.</td></tr>'}</tbody></table>
+          <td><a class="btn" href="/api/v1/datasets/exports/${encodeURIComponent(e.version)}">Download · ${(e.summary.bytes / 1e6).toFixed(1)} MB</a></td></tr>`).join('') || '<tr><td colspan="5" class="faint">No exports yet.</td></tr>'}</tbody></table></div>
     </section>`);
     body.append(ex);
     ex.querySelector('#exp').onclick = async () => {
       ex.querySelector('#emsg').textContent = 'exporting…';
       try {
         const r = await api('/api/v1/datasets/exports', { method: 'POST', json: { include_unreviewed: ex.querySelector('#raw').checked } });
-        ex.querySelector('#emsg').textContent = `${r.version}: ${r.n_samples} samples`;
+        lastMsg = `exported ${r.version}: ${r.n_samples} sample${r.n_samples === 1 ? '' : 's'}${r.n_samples ? '' : ' (confirm clips from trips uploaded with dataset rights first)'}`;
         load();
       } catch (e) { ex.querySelector('#emsg').textContent = e.message; }
     };

@@ -51,7 +51,7 @@ export function evidenceText(o) {
   if (e.from_side) bits.push(`moved in from the ${e.from_side} over ${e.over_s} s`);
   if (e.peak_decel_ms2 != null) bits.push(`peak deceleration ${e.peak_decel_ms2} m/s² (${e.signal === 'imu' ? 'IMU' : 'GPS speed'}), ${e.speed_before_kmh} → ${e.speed_after_kmh} km/h`);
   if (e.interpretation) bits.push(e.interpretation);
-  if (e.frames_seen) bits.push(`seen in ${e.frames_seen} analysed frames`);
+  if (e.frames_seen) bits.push(`seen in ${e.frames_seen} analysed frame${e.frames_seen === 1 ? '' : 's'}`);
   if (e.instances) bits.push(`${e.instances} instance(s) in the photo`);
   if (e.also) bits.push(`also: ${e.also.map(a => typeName(a.type)).join(', ')}`);
   if (e.selection) bits.push(e.selection);

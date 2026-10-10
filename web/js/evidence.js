@@ -32,7 +32,7 @@ export default async function evidence(root) {
         <li><b>Privacy</b> blurring comes from detector boxes: a face or plate the detector misses can stay visible. Production needs dedicated face and plate models.</li>
       </ul></div></div></section>
     <section class="section"><div class="section-head"><span class="label">Data</span><div><h2>Datasets, licences, models</h2></div></div>
-      <table class="tbl"><thead><tr><th>Data</th><th>Role</th><th>Licence</th><th>Source</th></tr></thead><tbody id="reg"></tbody></table></section>
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>Data</th><th>Role</th><th>Licence</th><th>Source</th></tr></thead><tbody id="reg"></tbody></table></div></section>
   </div>`);
   root.append(ui);
 

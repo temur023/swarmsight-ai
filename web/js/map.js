@@ -24,7 +24,7 @@ export default async function map(root, rest) {
       <div class="section-head"><span class="label">Partner API</span>
         <div><h2>Read-only feeds for maps, road services and fleets</h2>
           <p class="muted">Live on this server. In a pilot: API keys, rate limits, an audit log and a data-use agreement per partner.</p></div></div>
-      <table class="tbl"><thead><tr><th>Endpoint</th><th>What it returns</th><th class="r">Now</th></tr></thead><tbody id="apis"></tbody></table>
+      <div class="scroll-x"><table class="tbl"><thead><tr><th>Endpoint</th><th>What it returns</th><th class="r">Now</th></tr></thead><tbody id="apis"></tbody></table></div>
     </section>
   </div>`);
   root.append(ui);
