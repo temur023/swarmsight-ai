@@ -66,10 +66,19 @@ def _resize(img):
     return cv2.resize(img, (int(w * s), int(h * s)), interpolation=cv2.INTER_AREA) if s < 1 else img
 
 
-def _in_corridor(box, w, h) -> bool:
-    """Our own path for a forward-facing camera: the central band of the lower part of the frame."""
+def _lane_offset(box, w) -> float:
+    """Sideways offset of an object from the image centre in its own widths. A car is about half a lane wide, so a car
+    in our lane is within ~1 width, one in the next lane ~2 widths away, at any distance (no calibration needed)."""
+    bw = max(box[2] - box[0], 1.0)
+    return ((box[0] + box[2]) / 2 - w / 2) / bw
+
+
+def _in_corridor(box, w, h, cls: str = "car") -> bool:
+    """Our own path for a forward-facing camera: lower part of the frame, central band, and laterally within our lane
+    (measured in object widths, so a distant car in the next lane is not "in our path")."""
     cx = (box[0] + box[2]) / 2
-    return 0.3 * w <= cx <= 0.7 * w and box[3] >= 0.45 * h
+    k = 1.0 if cls in VEHICLES else 3.0  # a pedestrian is ~0.5 m wide: our lane is about +-3 widths
+    return 0.3 * w <= cx <= 0.7 * w and box[3] >= 0.45 * h and abs(_lane_offset(box, w)) <= k
 
 
 def _intervals(times: list[float], gap: float) -> list[list[float]]:
@@ -126,7 +135,7 @@ class EventMiner:
         if not cap.isOpened():
             raise ValueError("cannot decode the video (supported: mp4, mov, webm, avi with H.264/H.265/VP8/VP9)")
         fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-        fps = fps if 1.0 < fps < 240.0 else 30.0
+        fps = fps if 0.2 <= fps < 240.0 else 30.0  # a phone taking a photo a second is a 1 fps "video"
         n_total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
         step = max(1, int(round(fps / sample_fps)))
         max_frames = int(max_seconds * fps)
@@ -165,7 +174,7 @@ class EventMiner:
                     labels[tr.track_id][users[best][1]] += 1
                 cls = labels[tr.track_id].most_common(1)[0][0] if labels[tr.track_id] else gnames[tr.cls]
                 rec = {"id": tr.track_id, "cls": cls, "bbox": [round(float(v), 1) for v in box], "conf": round(tr.conf, 2),
-                       "corridor": bool(_in_corridor(box, w, h))}
+                       "corridor": bool(_in_corridor(box, w, h, cls))}
                 ttc = time_to_contact(tr) if rec["corridor"] else None
                 if ttc is not None and ttc < 10:
                     rec["ttc"] = round(ttc, 2)
@@ -207,8 +216,11 @@ class EventMiner:
             for d in f["damage"]:
                 dtracks[d["id"]].append((f["t"], d))
         by_cls: dict[str, list] = defaultdict(list)
+        # video: a damage must be seen in two analysed frames; a photo sequence (a frame every >= 0.4 s, 5-15 m apart)
+        # rarely shows the same crack twice, so one detection is enough there
+        min_seen = 2 if dt < 0.4 else 1
         for tid, obs in dtracks.items():
-            if len(obs) < 2:
+            if len(obs) < min_seen:
                 continue
             cls = Counter(o["cls"] for _, o in obs).most_common(1)[0][0]
             by_cls[cls].append((obs[0][0], obs[-1][0], tid, obs))
@@ -232,17 +244,13 @@ class EventMiner:
             for u in f["users"]:
                 utracks[u["id"]].append((f["t"], u))
         # scene motion between frames: median sideways shift of all tracks (the camera turning moves them all)
-        shift: dict[tuple, float] = {}
+        by_t = {f["t"]: f for f in frames}
 
-        def scene_shift(t0, t1):
-            k = (t0, t1)
-            if k not in shift:
-                f0 = next(f for f in frames if f["t"] == t0)
-                f1 = next(f for f in frames if f["t"] == t1)
-                b0 = {u["id"]: u["bbox"] for u in f0["users"]}
-                d = [((u["bbox"][0] + u["bbox"][2]) - (b0[u["id"]][0] + b0[u["id"]][2])) / 2 for u in f1["users"] if u["id"] in b0]
-                shift[k] = (float(np.median(d)), len(d))
-            return shift[k]
+        def scene_shift(t0, t1, exclude):
+            """Median sideways shift of the other tracks between two frames (our own car turning moves them all)."""
+            b0 = {u["id"]: u["bbox"] for u in by_t[t0]["users"] if u["id"] != exclude}
+            d = [((u["bbox"][0] + u["bbox"][2]) - (b0[u["id"]][0] + b0[u["id"]][2])) / 2 for u in by_t[t1]["users"] if u["id"] in b0]
+            return (float(np.median(d)), len(d)) if d else (0.0, 0)
 
         for tid, obs in utracks.items():
             cls = Counter(o["cls"] for _, o in obs).most_common(1)[0][0]
@@ -271,18 +279,22 @@ class EventMiner:
                     bw, bh = o["bbox"][2] - o["bbox"][0], o["bbox"][3] - o["bbox"][1]
                     if not (o["corridor"] and o["bbox"][3] >= 0.5 * h and bh >= 0.08 * h):
                         continue
+                    off = _lane_offset(o["bbox"], w)
+                    if abs(off) > 0.75:
+                        continue
                     for t0, o0 in obs[:i]:
                         if t - t0 > 1.5 or t - t0 < 0.3:
                             continue
-                        cx0, cx = (o0["bbox"][0] + o0["bbox"][2]) / 2, (o["bbox"][0] + o["bbox"][2]) / 2
-                        if 0.3 * w <= cx0 <= 0.7 * w:
-                            continue
-                        m, n = scene_shift(t0, t)
-                        rel = (cx - cx0) - (m if n >= 3 else 0.0)
-                        if abs(rel) >= 0.5 * bw and np.sign(rel) == np.sign(w / 2 - cx0):
+                        # where the car was, corrected for our own turning (shift of the other tracks), in its own widths
+                        m, n = scene_shift(t0, t, tid)
+                        b0 = o0["bbox"]
+                        shifted = [b0[0] + (m if n >= 2 else 0.0), b0[1], b0[2] + (m if n >= 2 else 0.0), b0[3]]
+                        off0 = _lane_offset(shifted, w)
+                        if abs(off0) - abs(off) >= 0.5 and abs(off0) >= 1.0:
                             out.append(Proposal("cut_in", t0, t, t, o["conf"], round(float(np.clip(0.5 + bh / h, 0.5, 1)), 3),
-                                                o["bbox"], [tid], {"road_user": cls, "from_side": "left" if cx0 < w / 2 else "right",
-                                                                   "lateral_px": round(float(rel), 1), "over_s": round(t - t0, 2)}))
+                                                o["bbox"], [tid], {"road_user": cls, "from_side": "left" if off0 < 0 else "right",
+                                                                   "lane_offset_widths": [round(off0, 2), round(off, 2)],
+                                                                   "scene_shift_px": round(m, 1) if n >= 2 else None, "over_s": round(t - t0, 2)}))
                             break
                     else:
                         continue
@@ -293,7 +305,7 @@ class EventMiner:
             for br in track.braking():
                 if br["t_peak"] > frames[-1]["t"] + 1:
                     continue
-                ctx = [p for p in out if p.kind == "safety" and br["t_start"] - 4.0 <= p.t_peak <= br["t_end"] + 1.0]
+                ctx = [p for p in out if p.kind == "safety" and p.type != "hard_braking" and br["t_start"] - 4.0 <= p.t_peak <= br["t_end"] + 1.0]
                 out.append(Proposal("hard_braking", br["t_start"], br["t_end"], br["t_peak"], 1.0,
                                     round(float(np.clip(br["peak_decel_ms2"] / 6.0, 0.3, 1)), 3), None, [],
                                     {**br, "visual_context": [{"type": p.type, "t": round(p.t_peak, 2)} for p in ctx],
@@ -474,6 +486,7 @@ class EventMiner:
         clips = [{"id": sg["id"], "t0": round(sg["t0"], 2), "t1": round(sg["t1"], 2), "file": sg["file"], "size": sg.get("size"),
                   "keyframes": sg["keyframes"], "events": sg["events"]} for sg in segs]
         kept = sum(c["t1"] - c["t0"] for c in clips)
+        kept_events = sum(c["t1"] - c["t0"] for c in clips if any(props[i].kind != "baseline" for i in c["events"]))
         counts = Counter(labels[k].most_common(1)[0][0] for k in labels if labels[k])
         return {
             "info": {**info, "model_version": self.model_version,
@@ -481,6 +494,8 @@ class EventMiner:
             "events": events, "clips": clips,
             "reduction": {"analysed_s": info["analysed_s"], "kept_s": round(kept, 2),
                           "kept_ratio": round(kept / info["analysed_s"], 4) if info["analysed_s"] else None,
+                          "kept_events_s": round(kept_events, 2),
+                          "kept_events_ratio": round(kept_events / info["analysed_s"], 4) if info["analysed_s"] else None,
                           "n_clips": len(clips), "baseline_s": 5.0 if extra["baseline"] else 0.0},
             "road_users": dict(counts),
             "perf": {"frames": len(frames), "analysis_s": round(t_analysis, 2), "clips_s": round(t_clips, 2),

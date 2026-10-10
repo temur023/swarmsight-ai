@@ -41,8 +41,8 @@ export default async function home(root) {
       <div class="nums4">
         ${rd ? figure(rd.test.map50.toFixed(2), 'mAP@.5', 'road-damage detector we trained', `RDD2022 · ${rd.n_test_images.toLocaleString('en')} held-out images, 6 countries`) : ''}
         ${tk ? figure(tk.ap_image.toFixed(2), 'AP', 'on Tashkent street photos', `precision ${pct(tk.precision_at_thr)} at the operating point`) : ''}
-        ${ev ? figure(ev.overall?.recall != null ? ev.overall.recall.toFixed(2) : null, '', 'event recall on labelled trips', `${ev.videos?.length ?? 0} trip(s) · precision ${ev.overall?.precision?.toFixed(2) ?? '—'}`) : ''}
-        ${ev ? figure(ev.reduction?.kept_ratio != null ? (100 * ev.reduction.kept_ratio).toFixed(0) : null, '%', 'of labelled video kept', ev.reduction?.event_retention != null ? `with ${pct(ev.reduction.event_retention)} of events retained` : '') : ''}
+        ${ev ? figure(ev.detection?.overall?.recall != null ? ev.detection.overall.recall.toFixed(2) : null, '', 'event recall on labelled trips', `${ev.videos?.length ?? 0} trip(s) · precision ${ev.detection?.overall?.precision?.toFixed(2) ?? '—'}`) : ''}
+        ${ev ? figure(ev.reduction?.kept_ratio_event_clips_only != null ? (100 * ev.reduction.kept_ratio_event_clips_only).toFixed(0) : null, '%', 'of labelled video kept in event clips', ev.reduction?.event_retention != null ? `${pct(ev.reduction.event_retention)} of labelled events inside them` : '') : ''}
       </div>
       <p class="note" style="margin-top:1.4rem">Sources, splits, licences and failure cases: <a href="#/evidence">Evidence</a>.
         What SwarmSight is not: an autopilot, a way to blame drivers from one camera, or access to Yandex or carmaker data.</p>

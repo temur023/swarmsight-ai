@@ -39,14 +39,15 @@ export default async function evidence(root) {
   // events
   const evEl = ui.querySelector('#ev');
   if (ev) {
-    const o = ev.overall || {};
+    const o = ev.detection?.overall || {};
+    const vids = ev.videos || [], tot = vids.reduce((a, v) => a + (v.duration_s || 0), 0);
     evEl.append(h(`<div class="nums4">
-      ${figure(o.precision != null ? o.precision.toFixed(2) : null, '', 'event precision', `${o.tp ?? '—'} of ${o.predictions ?? '—'} mined events are real`)}
-      ${figure(o.recall != null ? o.recall.toFixed(2) : null, '', 'event recall', `${o.tp ?? '—'} of ${o.ground_truth ?? '—'} labelled events found`)}
-      ${figure(o.false_alerts_per_hour != null ? Math.round(o.false_alerts_per_hour) : null, '/h', 'false alerts per hour of video')}
-      ${figure(ev.reduction?.kept_ratio != null ? (100 * ev.reduction.kept_ratio).toFixed(0) : null, '%', 'of video kept', ev.reduction?.event_retention != null ? `while keeping ${pct(ev.reduction.event_retention)} of labelled events` : '')}
+      ${figure(o.precision != null ? o.precision.toFixed(2) : null, '', 'event precision', `${o.tp ?? '—'} of ${o.pred ?? '—'} mined events are real`)}
+      ${figure(o.recall != null ? o.recall.toFixed(2) : null, '', 'event recall', `${o.tp ?? '—'} of ${o.gt ?? '—'} labelled events found`)}
+      ${figure(o.false_alerts_per_hour != null ? Math.round(o.false_alerts_per_hour) : null, '/h', 'false alerts per hour of video', 'every one goes to review, none is published')}
+      ${figure(ev.reduction?.kept_ratio_event_clips_only != null ? (100 * ev.reduction.kept_ratio_event_clips_only).toFixed(0) : null, '%', 'of video kept in event clips', ev.reduction?.event_retention != null ? `${pct(ev.reduction.event_retention)} of labelled events inside them · +5 s baseline per trip` : '')}
     </div>`));
-    evEl.append(h(`<p class="note" style="margin-top:1rem">${esc((ev.caveats || []).join(' · ') || '')} · ${ev.videos?.length ?? '?'} labelled trip(s), ${Math.round(ev.total_video_s || 0)} s of video.</p>`));
+    evEl.append(h(`<p class="note" style="margin-top:1rem">${esc((ev.caveats || []).join(' · ') || '')} · ${vids.length} labelled trip(s), ${Math.round(tot)} s of video.</p>`));
   } else evEl.append(h('<p class="note">No labelled trips evaluated yet.</p>'));
 
   // live precision
@@ -73,7 +74,7 @@ export default async function evidence(root) {
   ui.querySelector('#speed').append(h(`<div class="nums4">
     ${figure(fm ? Math.round(fm.p50) : null, 'ms', 'per analysed frame, both detectors (p50, live on this server)', fm ? `${fm.n} frames · p95 ${Math.round(fm.p95)} ms` : 'no trips processed yet')}
     ${figure(hl.inference ? hl.inference.split(' ')[0] : null, '', 'inference device', esc(hl.inference || ''))}
-    ${figure(ev?.latency?.wall_s_per_video_min != null ? ev.latency.wall_s_per_video_min.toFixed(0) : null, 's', 'server time per minute of video, including clips', ev?.latency?.provider || '')}
+    ${figure(ev?.latency?.wall_s_per_video_minute != null ? ev.latency.wall_s_per_video_minute.toFixed(0) : null, 's', 'server time per minute of video, including clips', ev?.latency?.provider || '')}
     ${figure(hl.hardware?.cpu_count, 'vCPU', esc(hl.clips || ''))}
   </div>`));
 

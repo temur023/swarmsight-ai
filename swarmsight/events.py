@@ -135,7 +135,8 @@ class Fusion:
         self.store.credit(o["device_id"], d_alpha={"confirm": 1.0, "correct": 0.5, "reject": 0.0}[action],
                           d_beta={"confirm": 0.0, "correct": 0.5, "reject": 1.0}[action])
         if old_event:
-            self._log(old_event, f"review:{action}", reviewer, f"observation #{obs_id} {o['label']} -> {new_label}. {note}".strip())
+            change = f": {o['label']} -> {new_label}" if new_label != o["label"] else ""
+            self._log(old_event, f"review:{action}", reviewer, f"observation #{obs_id}{change}. {note}".strip().rstrip("."))
             self.refresh(old_event)
         cur = self.store.one("SELECT * FROM observations WHERE id=?", (obs_id,))
         if cur["kind"] == "road" and cur["event_id"] is None and action != "reject":

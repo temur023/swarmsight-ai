@@ -148,18 +148,18 @@ async function upload(root) {
   dropZone(ui.querySelector('#drop'), 'video/*,image/*', fs => send(fs[0]));
 
   const s = await api('/api/v1/samples').catch(() => ({ samples: [], photos: [] }));
-  const st = s.samples[0];
-  if (st) {
-    ui.querySelector('#sample-trip').append(h(`<div class="trip-card">
+  for (const st of s.samples) {
+    const card = h(`<div class="trip-card">
       <img src="/samples/${esc(st.poster)}" alt="">
       <div><b>${esc(st.title)}</b><p class="faint" style="font-size:.86rem;margin:.3rem 0 .7rem">${esc(st.about)}</p>
-        <button class="btn primary" id="run-sample">Run this trip through the pipeline <span class="arr">→</span></button>
-        <p class="mono faint" style="font-size:.72rem;margin-top:.5rem">same code path as an upload · ${st.duration_s} s · with its GPS track · dataset rights: ours</p></div>
-    </div>`));
-    ui.querySelector('#run-sample').onclick = async () => {
+        <button class="btn primary">Run this trip through the pipeline <span class="arr">→</span></button>
+        <p class="mono faint" style="font-size:.72rem;margin-top:.5rem">same code path as an upload · ${st.duration_s} s · with its GPS track</p></div>
+    </div>`);
+    card.querySelector('button').onclick = async () => {
       const res = await api(`/api/v1/samples/${st.id}/run?device_id=${encodeURIComponent(deviceId())}`, { method: 'POST' });
       follow(res, { videoSrc: `/samples/${st.video}`, tag: st.title });
     };
+    ui.querySelector('#sample-trip').append(card);
   }
   const ph = ui.querySelector('#photos');
   ph.innerHTML = (s.photos || []).map((p, i) => `<button class="sample" data-i="${i}" title="our label: ${esc(p.our_label.map(typeName).join(', ') || 'no damage')}">
@@ -205,7 +205,8 @@ async function report(root, id) {
   const facts = isPhoto ? [
     ['Input', 'one photo'], ['Analysed in', `${perf.ms_per_frame_p50} ms`], ['Location', t.gps_source ? { exif: 'photo EXIF', pin: 'pin' }[t.gps_source] || t.gps_source : 'none'],
     ['Rights', t.rights_scope === 'road_and_dataset' ? 'road + dataset' : 'road only']] : [
-    ['Kept for review', `${sec(red.kept_s)} of ${sec(dur)} · ${pct(red.kept_ratio)}`], ['Clips', `${red.n_clips}${red.baseline_s ? ' (1 baseline)' : ''}`],
+    ['Kept in event clips', `${sec(red.kept_events_s ?? red.kept_s)} of ${sec(dur)} · ${pct(red.kept_events_ratio ?? red.kept_ratio)}`],
+    ['Clips', `${red.n_clips}${red.baseline_s ? ` (incl. ${red.baseline_s} s baseline)` : ''}`],
     ['Analysed', `${perf.frames} frames at ${info.sample_fps?.toFixed(1)} fps · ${perf.ms_per_frame_p50} ms per frame · ${info.provider === 'CUDAExecutionProvider' ? 'GPU' : 'CPU'}`],
     ['Server time', `${perf.wall_s} s for ${sec(dur)} of video (${perf.clips_s} s cutting clips)`],
     ['Location', t.gps_source ? { gpx: 'GPS track (GPX)', csv: 'GPS track (CSV)', single_point: 'one pin for the whole video' }[t.gps_source] || t.gps_source : 'none: events have no coordinates'],

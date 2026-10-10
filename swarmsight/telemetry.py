@@ -19,6 +19,8 @@ import numpy as np
 
 GAP_S = 2.0
 HARD_BRAKE_MS2 = 3.0  # deceleration a fleet safety team would review (about 0.3 g)
+MAX_PLAUSIBLE_MS2 = 9.5  # beyond about 1 g a car cannot brake: such a value is a GPS glitch, not an event
+MIN_SPEED_KMH = 15.0
 
 
 def haversine_m(lat1, lon1, lat2, lon2) -> float:
@@ -50,8 +52,9 @@ class Track:
         if not len(self) or t < self.t[0] - GAP_S or t > self.t[-1] + GAP_S:
             return None
         i = int(np.searchsorted(self.t, t))
-        if 0 < i < len(self) and self.t[i] - self.t[i - 1] > 2 * GAP_S + 1:
-            if min(t - self.t[i - 1], self.t[i] - t) > GAP_S:
+        if 0 < i < len(self) and self.t[i] - self.t[i - 1] > 2 * GAP_S + 1 and min(t - self.t[i - 1], self.t[i] - t) > GAP_S:
+            # a long gap between fixes: interpolate only if the car hardly moved (standing at a light), else unknown
+            if haversine_m(self.lat[i - 1], self.lon[i - 1], self.lat[i], self.lon[i]) > 30.0:
                 return None
         tt = float(np.clip(t, self.t[0], self.t[-1]))
         lat = float(np.interp(tt, self.t, self.lat))
@@ -90,6 +93,8 @@ class Track:
                 cur = None
         if cur is not None:
             out.append(cur)
+        out = [b for b in out if b["peak_decel_ms2"] <= MAX_PLAUSIBLE_MS2
+               and float(np.interp(b["t_start"] - 1.0, self.t, self.speed)) * 3.6 >= MIN_SPEED_KMH]
         for b in out:
             b["speed_before_kmh"] = round(float(np.interp(b["t_start"] - 1.0, self.t, self.speed)) * 3.6, 1)
             b["speed_after_kmh"] = round(float(np.interp(b["t_end"] + 1.0, self.t, self.speed)) * 3.6, 1)
@@ -117,6 +122,9 @@ def _finish(t, lat, lon, speed, accel, source) -> Track:
         d = np.array([haversine_m(lat[i], lon[i], lat[i + 1], lon[i + 1]) for i in range(len(t) - 1)])
         v = d / np.maximum(np.diff(t), 1e-3)
         speed = np.r_[v[0], (v[1:] + v[:-1]) / 2, v[-1]] if len(v) > 1 else np.r_[v, v]
+        if len(speed) >= 5:  # GPS positions are noisy: a 5-point running median before any braking test
+            pad = np.r_[speed[:2], speed, speed[-2:]]
+            speed = np.array([np.median(pad[i:i + 5]) for i in range(len(speed))])
     # drop GPS jumps (faster than 70 m/s between points)
     return Track(t, lat, lon, np.clip(speed, 0, 70), accel, source)
 
