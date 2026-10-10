@@ -92,8 +92,9 @@ class Fusion:
         else:
             lat, lon, sigma = e["lat"], e["lon"], e["radius_m"]
         reviewed = [o for o in obs if o["review_status"] in ("confirmed", "corrected")]
-        if not obs and all_obs:
-            status, why = "rejected", "every observation rejected by a moderator"
+        if not obs:
+            status, why = (("rejected", "every observation rejected by a moderator") if all_obs else
+                           ("expired", "no observations left: moved to another event by a moderator"))
         elif reviewed:
             status, why = "verified", f"confirmed by a moderator; {n_src} device(s)"
         elif n_src >= CORROBORATE_SOURCES and conf >= CORROBORATE_CONF:
