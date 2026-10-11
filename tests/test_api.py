@@ -170,3 +170,12 @@ def test_moderator_token_protects_writes_when_set(client, monkeypatch):
     r = client.post("/api/v1/observations/999999/review", json={"action": "confirm"}, headers={"X-Moderator-Token": "s3cret"})
     assert r.status_code == 404
     assert client.get("/api/v1/health").json()["moderation"] == "token required"
+
+
+def test_store_backup_is_a_consistent_copy(tmp_path):
+    import sqlite3
+    from swarmsight.store import Store
+    st = Store(tmp_path / "live.db")
+    st.device("dev-x")
+    st.backup_to(tmp_path / "copy.db")
+    assert sqlite3.connect(tmp_path / "copy.db").execute("SELECT COUNT(*) FROM devices").fetchone()[0] == 1

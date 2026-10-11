@@ -79,6 +79,7 @@ image = (
         "PYTHONUNBUFFERED": "1",
         "PYTHONDONTWRITEBYTECODE": "1",
         "SWARMSIGHT_RUNTIME": f"{DATA_DIR}/runtime",
+        "SWARMSIGHT_DB_LOCAL": "/tmp/swarmsight/swarmsight.db",  # live DB on local disk, consistent copy on the Volume
         "SWARMSIGHT_DEVICE": os.environ.get("SWARMSIGHT_DEVICE", "auto"),
         "SWARMSIGHT_THREADS": os.environ.get("SWARMSIGHT_THREADS", "4"),
         "SWARMSIGHT_JOB_WORKERS": os.environ.get("SWARMSIGHT_JOB_WORKERS", "2"),

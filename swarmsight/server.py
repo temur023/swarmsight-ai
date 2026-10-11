@@ -53,11 +53,36 @@ for d in (MEDIA_DIR, UPLOAD_DIR, EXPORT_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
 
+# On a network volume (Modal) the live SQLite file sits on local disk and a consistent copy goes to the volume every
+# 30 s and at shutdown; a restart restores from that copy. Elsewhere the database lives in RUNTIME directly.
+DB_LOCAL = os.environ.get("SWARMSIGHT_DB_LOCAL")
+
+
+def _db_path() -> Path:
+    persisted = RUNTIME / "swarmsight.db"
+    if not DB_LOCAL:
+        return persisted
+    local = Path(DB_LOCAL)
+    local.parent.mkdir(parents=True, exist_ok=True)
+    if not local.exists() and persisted.exists():
+        import shutil
+        shutil.copyfile(persisted, local)
+    return local
+
+
+def _backup_loop(stop: threading.Event):
+    while not stop.wait(30):
+        try:
+            S.store.backup_to(RUNTIME / "swarmsight.db")
+        except Exception as e:  # never take the service down for a backup
+            print("database backup failed:", e)
+
+
 class State:
     def __init__(self):
         self.detectors = {}
         self.miner: EventMiner | None = None
-        self.store = Store(RUNTIME / "swarmsight.db")
+        self.store = Store(_db_path())
         self.fusion = Fusion(self.store)
         self.jobs: dict[str, "Job"] = {}
         self.pool = ThreadPoolExecutor(max_workers=int(os.environ.get("SWARMSIGHT_JOB_WORKERS", "1")))
@@ -82,7 +107,13 @@ S = State()
 @asynccontextmanager
 async def lifespan(_app):
     S.load()
+    stop = threading.Event()
+    if DB_LOCAL:
+        threading.Thread(target=_backup_loop, args=(stop,), daemon=True).start()
     yield
+    stop.set()
+    if DB_LOCAL:
+        S.store.backup_to(RUNTIME / "swarmsight.db")
 
 
 app = FastAPI(title="SwarmSight AI", version=__version__, lifespan=lifespan,

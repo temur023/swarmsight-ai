@@ -86,6 +86,16 @@ class Store:
         self.conn.executescript(SCHEMA)
         self.lock = threading.RLock()
 
+    def backup_to(self, path: str | Path):
+        """A consistent copy of the database (SQLite online backup), written atomically."""
+        path = Path(path)
+        tmp = path.with_suffix(".tmp")
+        dst = sqlite3.connect(str(tmp))
+        with self.lock:
+            self.conn.backup(dst)
+        dst.close()
+        tmp.replace(path)
+
     def execute(self, sql: str, args=()):
         with self.lock:
             cur = self.conn.execute(sql, [json.dumps(a) if isinstance(a, (dict, list)) else a for a in args])
