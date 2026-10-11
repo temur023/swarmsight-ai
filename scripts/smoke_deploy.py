@@ -4,7 +4,7 @@
 
 1. GET  /api/v1/health                       (the first call may include a cold start)
 2. POST /api/v1/samples/stcroix-taxi/run and poll /api/v1/jobs/{id}
-3. POST /api/v1/trips with benchmarks/trips/tashkent_crossing.mp4 (multipart `video` + `track`) and poll the job
+3. POST /api/v1/trips with samples/tashkent_redmi.mp4 (multipart `video` + `track`) and poll the job
 4. GET  /media/<clip>: 200 + video/mp4, and a Range request answers 206
 5. WebSocket /ws/jobs/{id} replays the job to "done" (only if the `websockets` package is installed)
 
@@ -20,8 +20,8 @@ import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VIDEO = ROOT / "benchmarks" / "trips" / "tashkent_crossing.mp4"
-TRACK = ROOT / "benchmarks" / "trips" / "tashkent_crossing.csv"
+VIDEO = ROOT / "samples" / "tashkent_redmi.mp4"  # a public sample: never put the crash trip on the live site
+TRACK = ROOT / "samples" / "tashkent_redmi.csv"
 
 try:
     import requests
