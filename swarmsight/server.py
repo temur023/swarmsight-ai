@@ -37,6 +37,8 @@ from .datamine import RIGHTS, data_value, export as export_dataset, summary as d
 from .detector import load_default_detectors
 from .events import ACTIONS, LABELS, Fusion
 from .mining import EventMiner, ffmpeg_available, mine_photo
+from .reference import Reference
+from . import privacy
 from .store import Store
 from .telemetry import parse_track, single_point
 
@@ -473,6 +475,19 @@ def _file_sha1(path: Path) -> str:
     return h.hexdigest()
 
 
+REFERENCE = Reference(ROOT)
+
+
+@app.get("/api/v1/trips/{trip_id}/reference")
+def trip_reference(trip_id: str):
+    """The team's own labels of this footage next to what the system found (only for byte-identical labelled videos)."""
+    t = S.store.one("SELECT * FROM trips WHERE id=?", (trip_id,))
+    if not t:
+        raise HTTPException(404, "unknown trip")
+    obs = S.store.query("SELECT id, kind, type, t_start, t_end, t_peak FROM observations WHERE trip_id=?", (trip_id,))
+    return REFERENCE.compare(t, obs)
+
+
 def trip_report(trip_id: str) -> dict:
     t = S.store.one("SELECT * FROM trips WHERE id=?", (trip_id,))
     if not t:
@@ -654,6 +669,7 @@ def health():
         "models": {k: {"file": Path(d.model_path).name, "imgsz": d.imgsz, "classes": len(d.names), "provider": d.provider}
                    for k, d in S.detectors.items()},
         "inference": ("GPU" if S.gpu else "CPU") + " · ONNX Runtime", "clips": "ffmpeg H.264" if ffmpeg_available() else "unavailable (no ffmpeg)",
+        "anonymization": "faces and plates blurred" if privacy.ENABLED else "off",
         "hardware": {"cpu_count": os.cpu_count(), "machine": platform.machine(), "python": platform.python_version()},
         "frame_ms": {"n": len(v), "p50": round(float(np.median(v)), 1), "p95": round(float(np.percentile(v, 95)), 1)} if v else None,
         "uptime_s": round(time.time() - S.started),

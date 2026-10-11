@@ -31,6 +31,12 @@ import numpy as np
 
 from .detector import Detections, YoloOnnxDetector
 from .privacy import _blur
+
+
+def own_vehicle(x1, y1, x2, y2, fw, fh) -> bool:
+    """Our own hood or dashboard, read by the detector as a huge car at the bottom of the frame: it has no plate to
+    blur, and blurring its "plate band" would hide the road surface right in front of us."""
+    return (x2 - x1) > 0.45 * fw and y2 > 0.85 * fh
 from .roadusers import GROUP, GROUP_IDS, VEHICLES, VRU, compose_road_users, iou
 from .telemetry import Track
 from .tracker import ByteTracker, time_to_contact
@@ -401,7 +407,7 @@ class EventMiner:
                     bw, bh = x2 - x1, y2 - y1
                     if cls == "person":
                         _blur(img, x1 - 0.15 * bw, y1 - 0.06 * bh, x2 + 0.15 * bw, y1 + 0.32 * bh)
-                    elif cls in ("car", "truck", "bus"):
+                    elif cls in ("car", "truck", "bus") and not own_vehicle(x1, y1, x2, y2, ow, oh):
                         _blur(img, x1 - 0.03 * bw, y1 + 0.55 * bh, x2 + 0.03 * bw, y2 + 0.04 * bh)
             for i in need_peak:
                 thumbs[i] = self._thumb(img, props[i], s)
@@ -521,7 +527,7 @@ def mine_photo(miner: "EventMiner", img: np.ndarray, trip_id: str, location: dic
         bw, bh = x2 - x1, y2 - y1
         if u.label(i) == "person":
             _blur(safe, x1 - 0.15 * bw, y1 - 0.06 * bh, x2 + 0.15 * bw, y1 + 0.32 * bh)
-        elif u.label(i) in ("car", "truck", "bus"):
+        elif u.label(i) in ("car", "truck", "bus") and not own_vehicle(x1, y1, x2, y2, w, h):
             _blur(safe, x1 - 0.03 * bw, y1 + 0.55 * bh, x2 + 0.03 * bw, y2 + 0.04 * bh)
     s = min(1.0, CLIP_W / w)
     small = cv2.resize(safe, (int(w * s), int(h * s)), interpolation=cv2.INTER_AREA) if s < 1 else safe

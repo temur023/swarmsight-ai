@@ -8,6 +8,8 @@ README, Privacy).  Production pilots should add dedicated face/plate detectors.
 from __future__ import annotations
 
 import cv2
+import os
+
 import numpy as np
 
 from .detector import Detections
@@ -15,7 +17,13 @@ from .detector import Detections
 VEHICLES = {"car", "bus", "truck", "motorcycle"}
 
 
+# SWARMSIGHT_ANONYMIZE=0 turns blurring off (the demo deployment does, by the team's decision); on by default
+ENABLED = os.environ.get("SWARMSIGHT_ANONYMIZE", "1").strip().lower() not in ("0", "false", "no", "off")
+
+
 def _blur(img: np.ndarray, x1, y1, x2, y2):
+    if not ENABLED:
+        return
     h, w = img.shape[:2]
     x1, y1, x2, y2 = int(max(0, x1)), int(max(0, y1)), int(min(w, x2)), int(min(h, y2))
     if x2 - x1 < 2 or y2 - y1 < 2:

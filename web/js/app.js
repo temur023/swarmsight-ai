@@ -28,7 +28,7 @@ async function status() {
     const s = await api('/api/v1/health');
     el.className = 'server ok';
     el.querySelector('span').textContent = `server · ${s.inference.split(' ')[0]} · ${Object.keys(s.models).length} models`;
-    el.title = Object.entries(s.models).map(([k, m]) => `${k}: ${m.file} (${m.provider})`).join('\n') + `\nclips: ${s.clips}`;
+    el.title = Object.entries(s.models).map(([k, m]) => `${k}: ${m.file} (${m.provider})`).join('\n') + `\nclips: ${s.clips}\nblurring: ${s.anonymization || '—'}`;
   } catch {
     el.className = 'server bad';
     el.querySelector('span').textContent = 'server unreachable';

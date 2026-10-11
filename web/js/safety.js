@@ -25,6 +25,26 @@ export default async function safety(root) {
     ${figure(n('confirmed') + n('corrected'), '', 'confirmed by a reviewer')}
     ${figure(n('rejected'), '', 'rejected as false alerts')}
   </div>`));
+  body.append(h(`<section class="section"><div class="section-head"><span class="label">Sensors vs video</span>
+    <div><h2>What the phone's sensors know, and what the camera adds</h2>
+      <p class="muted">Driving-style scores today come from the accelerometer and GPS: they register that a car braked hard, not why.
+        For each episode below, the left column is all that sensors alone could report for that moment; the right column is what the system read from the video.</p></div></div>
+    <div class="cols c2 vs"><div class="panel"><span class="label">Sensors only</span><p>"Hard braking": a penalty point, with no way to tell a careless driver from one who avoided a pedestrian. A near miss without braking is invisible.</p></div>
+      <div class="panel"><span class="label">Sensors + video</span><p>The same moment with the clip and what was ahead seconds before: a pedestrian in our path, a car cutting in, the time to contact. A person then decides; the system never claims a cause or a fault.</p></div></div>
+  </section>`));
+  // per trip: is there telemetry, and which hard-braking moments did it register
+  const trips = {};
+  await Promise.all([...new Set(obs.map(o => o.trip_id))].map(async id => {
+    const t = await api(`/api/v1/trips/${id}`).catch(() => null);
+    trips[id] = t ? { gps: t.trip.gps_source, braking: t.observations.filter(x => x.type === 'hard_braking') } : null;
+  }));
+  const sensorsOnly = o => {
+    const t = trips[o.trip_id];
+    if (o.type === 'hard_braking') return evidenceText({ evidence: { peak_decel_ms2: o.evidence?.peak_decel_ms2, signal: o.evidence?.signal, speed_before_kmh: o.evidence?.speed_before_kmh, speed_after_kmh: o.evidence?.speed_after_kmh } }) + ' · no reason';
+    if (!t || !t.gps) return 'no telemetry in this trip: sensors know nothing about this moment';
+    const b = t.braking.find(x => Math.abs(x.t_peak - o.t_peak) <= 4);
+    return b ? `hard braking at ${b.t_peak.toFixed(1)} s · no reason` : 'no hard braking: for sensors this moment does not exist';
+  };
   const counts = TYPES.map(t => [t, obs.filter(o => o.label === t).length]);
   body.append(h(`<section class="section"><div class="section-head"><span class="label">By type</span>
     <div><p class="muted">What one front camera and the phone's telemetry can support, nothing more.</p></div></div>
@@ -47,7 +67,10 @@ export default async function safety(root) {
           <tr><th>Model</th><td>confidence ${o.conf.toFixed(2)}</td></tr>
           <tr><th>Where</th><td>${esc(locText(o))}</td></tr>
         </tbody></table>
-        <p class="evtext">${esc(evidenceText(o))}</p>
+        <table class="kv vsrow"><tbody>
+          <tr><th>Sensors only</th><td>${esc(sensorsOnly(o))}</td></tr>
+          <tr><th>Sensors + video</th><td>${esc(evidenceText(o))}</td></tr>
+        </tbody></table>
         <p class="note" style="margin-top:.5rem">cause: not established · driver fault: not determined</p>
       </div>
     </article>`));

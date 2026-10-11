@@ -296,6 +296,39 @@ const RU = {
     'Это GPS-трек, а не видео: выберите его в поле «GPS-трек» справа, а сюда перетащите видео.',
   'Not a video or a photo: drop an MP4, MOV or WEBM video, or a JPG/PNG photo.': 'Это не видео и не фото: перетащите видео MP4, MOV или WEBM либо фото JPG/PNG.',
   'network error: the upload did not reach the server': 'ошибка сети: файл не дошёл до сервера',
+  'Reference labels': 'Эталонная разметка', 'Our labels of this footage, next to what the system found': 'Наша разметка этого видео рядом с тем, что нашла система',
+  'labelled moments found': 'размеченных моментов найдено', 'recall on this trip': 'полнота на этой поездке',
+  'observations that match a labelled moment': 'наблюдений совпали с размеченным моментом', 'repeat sightings of one moment count as correct': 'повторные наблюдения одного момента считаются верными',
+  'false alerts': 'ложных срабатываний', 'observations with no labelled moment': 'наблюдения без размеченного момента',
+  'Labels': 'Разметка', 'System': 'Система', 'found / correct': 'найдено / верно', 'missed': 'пропущено', 'false alert': 'ложное срабатывание',
+  'Labelled': 'Размечено', 'What we see in the footage': 'Что мы видим на видео', 'found': 'найдено', 'no labelled moment here': 'здесь ничего не размечено',
+  // data exchange (home)
+  'Data exchange': 'Обмен данными', 'One car sees it, others confirm it': 'Одна машина замечает, другие подтверждают',
+  'How a sighting becomes a fact on the map. Today this chain runs for road damage (potholes and cracks); safety episodes stay inside the fleet, and traffic jams or crashes as map events are pilot work.':
+    'Как наблюдение становится фактом на карте. Сейчас эта цепочка работает для дефектов дороги (ямы и трещины); эпизоды безопасности остаются внутри таксопарка, а пробки и ДТП как события карты — задача пилота.',
+  'Seen': 'Увидел', 'Sent': 'Отправил', 'Compared': 'Сравнили', 'Checked': 'Проверил человек', 'Confirmed': 'Подтверждено',
+  "A taxi's camera finds damage and keeps the frame with the model's box.": 'Камера такси находит дефект и сохраняет кадр с рамкой модели.',
+  'Only a short clip and a position go to the server, not the whole drive.': 'На сервер уходят только короткий клип и координата, а не вся поездка.',
+  'Sightings from other cars within the GPS error merge into one event. Confidence grows only with independent sources: another car and another recording.':
+    'Наблюдения других машин в пределах погрешности GPS сливаются в одно событие. Уверенность растёт только с независимыми источниками: другая машина и другая запись.',
+  'A moderator confirms or rejects. Every decision changes how much the system trusts that device.': 'Модератор подтверждает или отклоняет. Каждое решение меняет, насколько система доверяет этому устройству.',
+  'The event goes to the map and the partner feed, and expires unless cars see it again.': 'Событие попадает на карту и в фид для партнёров и истекает, если машины его больше не видят.',
+  'Open on the map →': 'Открыть на карте →', 'No road event on this server yet.': 'На этом сервере пока нет дорожных событий.',
+  'with a GPS track to start a chain.': 'с GPS-треком, чтобы запустить цепочку.',
+  'created': 'создано', 'merged': 'объединено', 'review:confirm': 'проверка: подтверждено', 'review:reject': 'проверка: отклонено', 'review:correct': 'проверка: исправлено',
+  'fusion': 'слияние',
+  // safety: sensors vs video
+  'Sensors vs video': 'Датчики и видео', "What the phone's sensors know, and what the camera adds": 'Что знают датчики телефона и что добавляет камера',
+  "Driving-style scores today come from the accelerometer and GPS: they register that a car braked hard, not why. For each episode below, the left column is all that sensors alone could report for that moment; the right column is what the system read from the video.":
+    'Оценки стиля вождения сегодня строятся по акселерометру и GPS: они фиксируют, что машина резко затормозила, но не почему. Для каждого эпизода ниже первая строка — всё, что могли бы сообщить одни датчики об этом моменте; вторая — что система прочитала из видео.',
+  'Sensors only': 'Только датчики', 'Sensors + video': 'Датчики + видео',
+  '"Hard braking": a penalty point, with no way to tell a careless driver from one who avoided a pedestrian. A near miss without braking is invisible.':
+    '«Резкое торможение» — штрафной балл, и не отличить небрежного водителя от того, кто уступил пешеходу. Опасная ситуация без торможения вообще не видна.',
+  'The same moment with the clip and what was ahead seconds before: a pedestrian in our path, a car cutting in, the time to contact. A person then decides; the system never claims a cause or a fault.':
+    'Тот же момент с клипом и тем, что было впереди за секунды до него: пешеход на пути, подрезающая машина, время до контакта. Затем решает человек; система никогда не утверждает причину или вину.',
+  'no telemetry in this trip: sensors know nothing about this moment': 'в этой поездке нет телеметрии: датчики ничего не знают об этом моменте',
+  'no hard braking: for sensors this moment does not exist': 'резкого торможения не было: для датчиков этого момента не существует',
+  'no reason': 'без причины',
   'Moderator token (set by the team for this deployment):': 'Токен модератора (задаётся командой для этого сайта):',
 };
 
@@ -358,6 +391,16 @@ const PATTERNS = [
   [/^(.+) unless re-observed$/, (m, d) => `${d}, если не замечено снова`],
   [/^uploading ([\d.]+) MB…(.*)$/, (m, n, rest) => `загрузка ${n} МБ…${rest ? ' ' + (RU[rest.trim()] || rest.trim()) : ''}`],
   [/^uploading ([\d.]+) MB$/, (m, n) => `загрузка ${n} МБ`],
+  [/^The team watched this video frame by frame and marked every moment before any model output\. The server compares them with this run: tolerance ([\d.]+) s, same family \(road damage or safety\)\.$/,
+    (m, t) => `Команда просмотрела это видео покадрово и разметила каждый момент до запуска модели. Сервер сравнивает разметку с этим прогоном: допуск ${t} с, то же семейство (дефект дороги или безопасность).`],
+  [/^(\d+) of them with the exact type$/, (m, n) => `${n} из них с точным типом`],
+  [/^Live example · road event #(\d+)$/, (m, n) => `Живой пример · дорожное событие №${n}`],
+  [/^hard braking at ([\d.]+) s$/, (m, t) => `резкое торможение на ${t} с`],
+  [/^(\d+) observation\(s\) from (\d+) device\(s\)$/, (m, a, b) => `${a} ${pl(+a, 'наблюдение', 'наблюдения', 'наблюдений')} с ${b} ${pl(+b, 'устройства', 'устройств', 'устройств')}`],
+  [/^confirmed by a moderator; (\d+) device\(s\)$/, (m, n) => `подтверждено модератором; ${n} ${pl(+n, 'устройство', 'устройства', 'устройств')}`],
+  [/^(\d+) independent devices, confidence ([\d.]+)$/, (m, n, c) => `${n} независимых источника, уверенность ${c}`],
+  [/^(\d+) device\(s\), confidence ([\d.]+)$/, (m, n, c) => `${n} ${pl(+n, 'устройство', 'устройства', 'устройств')}, уверенность ${c}`],
+  [/^±(\d+) m$/, (m, n) => `±${n} м`],
   [/^analysing$/, () => 'анализ'],
   [/^t = ([\d.]+) s$/, (m, v) => `t = ${v} с`],
   [/^Download$/, () => 'Скачать'], [/^([\d.]+) MB$/, (m, n) => `${n} МБ`],

@@ -84,6 +84,7 @@ image = (
         "SWARMSIGHT_THREADS": os.environ.get("SWARMSIGHT_THREADS", "4"),
         "SWARMSIGHT_JOB_WORKERS": os.environ.get("SWARMSIGHT_JOB_WORKERS", "2"),
         "SWARMSIGHT_MAX_VIDEO_MB": os.environ.get("SWARMSIGHT_MAX_VIDEO_MB", "300"),
+        "SWARMSIGHT_ANONYMIZE": os.environ.get("SWARMSIGHT_ANONYMIZE", "1"),  # face/plate blurring; 0 turns it off
         # optional: review, manual location and export then need this token (the site asks for it once)
         "SWARMSIGHT_MODERATOR_TOKEN": os.environ.get("SWARMSIGHT_MODERATOR_TOKEN", ""),
     })
@@ -94,6 +95,8 @@ image = (
     .add_local_dir(HERE / "samples", f"{APP_DIR}/samples", ignore=_ignore)
     .add_local_dir(HERE / "docs", f"{APP_DIR}/docs", ignore=_ignore)
     .add_local_dir(HERE / "benchmarks" / "results", f"{APP_DIR}/benchmarks/results", ignore=_ignore)
+    .add_local_file(HERE / "benchmarks" / "event_labels.csv", f"{APP_DIR}/benchmarks/event_labels.csv")  # reference labels
+    .add_local_file(HERE / "benchmarks" / "event_labels_ru.csv", f"{APP_DIR}/benchmarks/event_labels_ru.csv")
     .add_local_dir(HERE / "datasets" / "tashkent", f"{APP_DIR}/datasets/tashkent", ignore=_ignore)
 )
 

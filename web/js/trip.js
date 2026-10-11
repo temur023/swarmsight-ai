@@ -1,4 +1,4 @@
-import { api, baseLayer, C, clipPlayer, deviceId, drawBox, dropZone, esc, fitCanvas, geolocate, h, KIND, locText, media, pct, pretty, sec, streamJob, TASHKENT, typeName, upload as uploadForm } from './util.js';
+import { api, baseLayer, C, clipPlayer, deviceId, drawBox, dropZone, esc, figure, fitCanvas, geolocate, h, KIND, locText, media, pct, pretty, sec, streamJob, TASHKENT, typeName, upload as uploadForm } from './util.js';
 import { evidenceText, kindChip, reviewControls, statusChip } from './components.js';
 import { queueBadge } from './app.js';
 import { t as tr } from './i18n.js';
@@ -190,6 +190,40 @@ async function upload(root) {
   return () => { if (job) job.cancel(); cancelAnimationFrame(raf); map.remove(); };
 }
 
+// ------------------------------------------------------------------------------------------- reference labels
+// The team labelled this exact footage by hand before any model output; the server compares the two for this run.
+function referenceSection(ref, r, dur) {
+  const s = ref.summary, ru = document.documentElement.lang === 'ru';
+  const obsById = Object.fromEntries(r.observations.map(o => [o.id, o]));
+  const pos = x => `${(100 * x / Math.max(dur, 1e-6)).toFixed(2)}%`;
+  const wid = (a, b) => `${Math.max(0.4, 100 * (b - a) / Math.max(dur, 1e-6)).toFixed(2)}%`;
+  const fa = ref.observations.filter(o => !o.correct);
+  const el = h(`<section class="section"><div class="section-head"><span class="label">Reference labels</span>
+    <div><h2>Our labels of this footage, next to what the system found</h2>
+      <p class="muted">The team watched this video frame by frame and marked every moment before any model output. The server compares
+        them with this run: tolerance ${ref.tolerance_s} s, same family (road damage or safety).</p></div></div>
+    <div class="nums4">
+      ${figure(`${s.found}/${s.labelled}`, '', 'labelled moments found', `${s.found_exact_type} of them with the exact type`)}
+      ${figure(s.recall != null ? pct(s.recall) : null, '', 'recall on this trip')}
+      ${figure(`${s.correct}/${s.observations}`, '', 'observations that match a labelled moment', 'repeat sightings of one moment count as correct')}
+      ${figure(s.false_alerts, '', 'false alerts', 'observations with no labelled moment')}
+    </div>
+    <div class="reftl">
+      <div class="lane"><span class="label">Labels</span><div class="bar">${ref.labels.map(g => `<span class="ref ${g.found ? 'ok' : 'miss'}" style="left:${pos(g.start_s)};width:${wid(g.start_s, g.end_s)}" title="${esc(typeName(g.type))} · ${g.start_s}–${g.end_s} s"></span>`).join('')}</div></div>
+      <div class="lane"><span class="label">System</span><div class="bar">${ref.observations.map(o => `<span class="pt ${o.correct ? 'ok' : 'fa'}" style="left:${pos(o.t_peak)}" title="${esc(typeName(o.type))} · ${o.t_peak} s"></span>`).join('')}</div></div>
+      <div class="legend" style="margin-top:.5rem"><span><i style="background:var(--verified)"></i>found / correct</span><span><i style="background:var(--critical)"></i>missed</span><span><i style="background:var(--hazard)"></i>false alert</span></div>
+    </div>
+    <div class="scroll-x" style="margin-top:1rem"><table class="tbl"><thead><tr><th>When</th><th>Labelled</th><th>What we see in the footage</th><th>System</th></tr></thead><tbody>
+      ${ref.labels.map(g => `<tr><td class="mono">${g.start_s.toFixed(1)}–${g.end_s.toFixed(1)} s</td><td>${esc(typeName(g.type))}</td>
+        <td data-noi18n>${esc(ru && g.note_ru ? g.note_ru : g.note)}</td>
+        <td>${g.found ? `<span class="status s-verified">found</span> ${g.matches.map(m => `<a href="#o${m}" data-o="${m}">${esc(typeName(obsById[m]?.type || ''))}</a>`).join(', ')}` : '<span class="status s-rejected">missed</span>'}</td></tr>`).join('')}
+      ${fa.map(o => `<tr><td class="mono">${o.t_peak.toFixed(1)} s</td><td class="faint">—</td><td class="faint">no labelled moment here</td>
+        <td><span class="status s-candidate">false alert</span> <a href="#o${o.id}" data-o="${o.id}">${esc(typeName(o.type))}</a></td></tr>`).join('')}
+    </tbody></table></div></section>`);
+  el.addEventListener('click', e => { const a = e.target.closest('a[data-o]'); if (!a) return; e.preventDefault(); document.getElementById(`o${a.dataset.o}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  return el;
+}
+
 // ------------------------------------------------------------------------------------------- report
 async function report(root, id) {
   const wrap = h('<div class="wrap"><p class="faint" style="padding:3rem 0">Loading the trip…</p></div>');
@@ -241,6 +275,9 @@ async function report(root, id) {
     tl.querySelector('.ttl').onclick = e => { const m = e.target.closest('.mark'); if (!m) return; e.preventDefault(); wrap.querySelector(`#o${m.dataset.o}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
     wrap.append(tl);
   }
+
+  const ref = await api(`/api/v1/trips/${id}/reference`).catch(() => ({ available: false }));
+  if (ref.available) wrap.append(referenceSection(ref, r, dur));
 
   const list = h(`<section class="section"><div class="section-head"><span class="label">Events by module</span>
     <div><p class="muted">Review here or in the <a href="#/review">review center</a>. Confirmed road damage with a location becomes a verified road event.</p></div></div>

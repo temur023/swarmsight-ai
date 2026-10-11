@@ -1,0 +1,21 @@
+video,start_s,end_s,type,note
+samples/tashkent_redmi.mp4,0.0,7.83,alligator_crack,"Фото 0–7: сетка усталостных трещин по всей нашей полосе и обеим соседним, вблизи и на среднем расстоянии"
+samples/tashkent_redmi.mp4,12.3,13.42,alligator_crack,Фото 11–12: сетка трещин посередине нашей полосы
+samples/tashkent_redmi.mp4,0.0,14.54,longitudinal_crack,Фото 0–13: продольные трещины вдоль нашей полосы на каждом фото первого участка
+samples/tashkent_redmi.mp4,0.0,14.54,transverse_crack,"Фото 0–13: поперечные трещины через нашу полосу почти на каждом фото (лучше всего видно на 0, 6, 7 и 13)"
+samples/tashkent_redmi.mp4,40.27,41.39,pothole,Фото 36–37: небольшая выбоина (~40 px) слева в нашей полосе сразу за стоп-линией перекрёстка
+samples/tashkent_redmi.mp4,46.98,53.69,longitudinal_crack,"Фото 42–48: извилистая трещина посередине нашей полосы, дальше вдоль левой разметки"
+samples/tashkent_redmi.mp4,60.4,64.88,longitudinal_crack,"Фото 54–58: трещины в нашей полосе, лучше всего на 56 (левая колея) и 58 (вдоль разметки)"
+samples/tashkent_redmi.mp4,67.11,72.71,longitudinal_crack,Фото 60–65: длинные трещины в нашей и правой полосе
+samples/tashkent_redmi.mp4,69.35,72.71,alligator_crack,Фото 62–65: сетка трещин в правой соседней полосе
+samples/tashkent_redmi.mp4,70.47,72.71,transverse_crack,Фото 63–65: поперечные трещины через правую половину дороги
+samples/tashkent_redmi.mp4,76.06,87.25,longitudinal_crack,Фото 68–78: трещины в нашей и правой полосе перед тоннелем
+samples/tashkent_redmi.mp4,77.18,78.3,alligator_crack,Фото 69–70: сетка трещин в правой полосе
+samples/tashkent_redmi.mp4,76.06,81.66,transverse_crack,"Фото 68–73: поперечные трещины, лучше всего на 72 (через нашу и левую полосу)"
+samples/tashkent_redmi.mp4,86.13,86.13,transverse_crack,Фото 77: поперечная трещина через нашу и правую полосу под мостом
+samples/tashkent_redmi.mp4,102.91,111.86,longitudinal_crack,"Фото 92–100: после тоннеля, длинные трещины в нашей полосе"
+samples/tashkent_redmi.mp4,106.26,109.62,transverse_crack,Фото 95–98: поперечные трещины через нашу полосу
+samples/tashkent_redmi.mp4,115.21,133.11,longitudinal_crack,Фото 103–119: продольные трещины в нашей или соседних полосах почти на каждом фото последнего участка
+samples/tashkent_redmi.mp4,121.92,123.04,transverse_crack,Фото 109–110: поперечные трещины через нашу полосу
+samples/tashkent_redmi.mp4,123.04,124.16,alligator_crack,Фото 110–111: сетка трещин в нашей и левой полосе
+samples/tashkent_redmi.mp4,129.75,131.99,alligator_crack,Фото 116–118: сетка трещин посередине нашей полосы

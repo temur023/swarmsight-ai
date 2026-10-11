@@ -1,4 +1,4 @@
-import { api, esc, figure, h, pct } from './util.js';
+import { api, esc, figure, fmtTime, h, media, pct, typeName } from './util.js';
 
 export default async function home(root) {
   const [m, d] = await Promise.all([api('/api/v1/metrics').catch(() => ({})), api('/api/v1/datasets/summary').catch(() => ({}))]);
@@ -39,6 +39,20 @@ export default async function home(root) {
     </section>
 
     <section class="section">
+      <div class="section-head"><span class="label">Data exchange</span><div><h2>One car sees it, others confirm it</h2>
+        <p class="muted">How a sighting becomes a fact on the map. Today this chain runs for road damage (potholes and cracks);
+          safety episodes stay inside the fleet, and traffic jams or crashes as map events are pilot work.</p></div></div>
+      <ol class="xchain">
+        <li><b>Seen</b><span>A taxi's camera finds damage and keeps the frame with the model's box.</span></li>
+        <li><b>Sent</b><span>Only a short clip and a position go to the server, not the whole drive.</span></li>
+        <li><b>Compared</b><span>Sightings from other cars within the GPS error merge into one event. Confidence grows only with independent sources: another car and another recording.</span></li>
+        <li><b>Checked</b><span>A moderator confirms or rejects. Every decision changes how much the system trusts that device.</span></li>
+        <li><b>Confirmed</b><span>The event goes to the map and the partner feed, and expires unless cars see it again.</span></li>
+      </ol>
+      <div id="xlive"></div>
+    </section>
+
+    <section class="section">
       <div class="section-head"><span class="label">On this server</span><div><h2>Live, from real uploads</h2></div></div>
       <div class="nums4">
         ${figure(live.trips ?? 0, '', 'trips processed')}
@@ -59,5 +73,26 @@ export default async function home(root) {
       <p class="note" style="margin-top:1.4rem">Sources, splits, licences and failure cases: <a href="#/evidence">Evidence</a>.
         What SwarmSight is not: an autopilot, a way to blame drivers from one camera, or access to Yandex or carmaker data.</p>
     </section>
+  </div>`));
+  liveChain(root.querySelector('#xlive'));
+}
+
+// The chain of one real event on this server: its observations from each car and its history.
+async function liveChain(el) {
+  if (!el) return;
+  const pick = async st => (await api(`/api/v1/events?status=${st}`).catch(() => ({ features: [] }))).features
+    .sort((a, b) => b.properties.observations - a.properties.observations)[0];
+  const f = (await pick('verified')) || (await pick('corroborated')) || (await pick('candidate'));
+  if (!f) { el.innerHTML = '<p class="note">No road event on this server yet. <a href="#/trip">Upload a trip</a> with a GPS track to start a chain.</p>'; return; }
+  const e = await api(`/api/v1/events/${f.properties.id}`);
+  const devs = new Set(e.observations.map(o => o.device_id));
+  el.append(h(`<div class="panel xlive">
+    <div class="row between"><span class="label">Live example · road event #${e.id}</span><a href="#/map/${e.id}">Open on the map →</a></div>
+    <h3>${esc(typeName(e.type))} <span class="status s-${e.status}">${esc(e.status)}</span></h3>
+    <p class="faint" style="font-size:.86rem">${esc(e.validity_reason || '')} · ${e.observations.length} observation(s) from ${devs.size} device(s) · ±${Math.round(e.radius_m)} m</p>
+    <div class="xobs">${e.observations.slice(0, 6).map(o => `<div class="xo">${o.thumb ? `<img src="${media(o.thumb)}" alt="">` : ''}
+      <span class="mono">${esc(o.device_id)}</span><span class="mono faint">${fmtTime(o.observed_at)} · conf ${o.conf.toFixed(2)}</span>
+      <span class="status s-${o.review_status === 'confirmed' ? 'verified' : o.review_status === 'rejected' ? 'rejected' : 'candidate'}">${esc(o.review_status.replace('_', ' '))}</span></div>`).join('')}</div>
+    <div class="xhist">${e.history.map(x => `<span>${esc(x.action)}<i>${esc(x.by)}</i></span>`).join('<b>→</b>')}</div>
   </div>`));
 }
