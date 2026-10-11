@@ -7,7 +7,7 @@ const TABS = [['all', 'All open'], ['road', 'Road'], ['safety', 'Safety'], ['bas
 export default async function review(root) {
   const ui = h(`<div class="wrap">
     <section class="page-head">
-      <span class="label">02 · Review center</span>
+      <span class="label">Step 2 · Review center</span>
       <h1>A person decides what the model only suspects.</h1>
       <p class="lead">Every mined event waits here as a candidate: confirm it, reject it or correct its type. Decisions are logged,
         change each device's reliability, turn confirmed road damage into verified road events and make clips eligible for the dataset.</p>

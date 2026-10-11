@@ -1,6 +1,7 @@
 import { api, baseLayer, C, clipPlayer, deviceId, drawBox, dropZone, esc, fitCanvas, geolocate, h, KIND, locText, media, pct, pretty, sec, streamJob, TASHKENT, typeName } from './util.js';
 import { evidenceText, kindChip, reviewControls, statusChip } from './components.js';
 import { queueBadge } from './app.js';
+import { t as tr } from './i18n.js';
 
 export default async function trip(root, rest) {
   if (rest[0]) return report(root, rest[0]);
@@ -16,16 +17,16 @@ function drawFrame(ov, stage, fr) {
   if (!fr) return;
   const s = ov.width / fr.w;
   for (const u of fr.users || []) {
-    if (u.ttc && u.ttc < 3) drawBox(ctx, u.bbox, `${pretty(u.cls)} · contact ${u.ttc} s`, C.critical, { scale: s, lw: 2.5 });
+    if (u.ttc && u.ttc < 3) drawBox(ctx, u.bbox, `${tr(pretty(u.cls))} · ${tr(`contact ${u.ttc} s`)}`, C.critical, { scale: s, lw: 2.5 });
     else { ctx.save(); ctx.globalAlpha = 0.5; drawBox(ctx, u.bbox, '', C.own, { scale: s, lw: 1.2 }); ctx.restore(); }
   }
-  for (const d of fr.damage || []) drawBox(ctx, d.bbox, `${pretty(d.cls)} ${Math.round(d.conf * 100)}%`, C.hazard, { scale: s, fill: true, lw: 2 });
+  for (const d of fr.damage || []) drawBox(ctx, d.bbox, `${tr(pretty(d.cls))} ${Math.round(d.conf * 100)}%`, C.hazard, { scale: s, fill: true, lw: 2 });
 }
 
 async function upload(root) {
   const ui = h(`<div class="wrap">
     <section class="page-head">
-      <span class="label">01 · Upload a trip</span>
+      <span class="label">Step 1 · Upload a trip</span>
       <h1>A trip goes in. A few verifiable moments come out.</h1>
       <p class="lead">Drop dashcam or phone footage from a drive. The server detects and tracks road users and road damage,
         proposes events, cuts each one into a short clip with context before and after, blurs faces and plates,
@@ -226,11 +227,20 @@ async function report(root, id) {
     wrap.append(tl);
   }
 
-  const list = h(`<section class="section"><div class="section-head"><span class="label">Events</span>
+  const list = h(`<section class="section"><div class="section-head"><span class="label">Events by module</span>
     <div><p class="muted">Review here or in the <a href="#/review">review center</a>. Confirmed road damage with a location becomes a verified road event.</p></div></div>
-    <div class="cards" id="cards"></div></section>`);
+    <div id="groups"></div></section>`);
   wrap.append(list);
-  const cards = list.querySelector('#cards');
+  const groups = list.querySelector('#groups');
+  const cardsFor = {};
+  for (const k of Object.keys(KIND)) {
+    const n = r.observations.filter(o => o.kind === k).length;
+    if (!n) continue;
+    const g = h(`<div class="kgroup"><span class="label"><i style="background:${KIND[k].col}"></i>${esc(KIND[k].module)} · ${n}
+      <a href="#/${KIND[k].route}" style="margin-left:auto">Open ${esc(KIND[k].module)} →</a></span><div class="cards"></div></div>`);
+    groups.append(g);
+    cardsFor[k] = g.querySelector('.cards');
+  }
   const card = o => {
     const el = h(`<article class="ecard" id="o${o.id}">
       <div class="media">${clipPlayer(o)}</div>
@@ -253,8 +263,8 @@ async function report(root, id) {
     }
     return el;
   };
-  for (const o of [...evs, ...base]) cards.append(card(o));
-  if (!evs.length && !base.length) cards.append(h('<p class="faint">Nothing to review.</p>'));
+  for (const o of [...evs, ...base]) cardsFor[o.kind]?.append(card(o));
+  if (!evs.length && !base.length) groups.append(h('<p class="faint">Nothing to review.</p>'));
 
   const pts = r.track.length ? r.track : [];
   const located = r.observations.filter(o => o.lat != null);

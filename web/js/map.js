@@ -6,7 +6,7 @@ const FILTERS = { verified: 'verified', open: 'candidate,corroborated', all: 'ca
 export default async function map(root, rest) {
   const ui = h(`<div class="wrap">
     <section class="page-head">
-      <span class="label">03 · Road events &amp; partner API</span>
+      <span class="label">Module · RoadSense · road events and partner API</span>
       <h1>Five taxis, one pothole, one event.</h1>
       <p class="lead">Observations of the same damage from different trips merge into one event. Confidence grows only with
         independent devices; a moderator's confirmation makes it verified. Only verified events reach partners, without

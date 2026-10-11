@@ -4,7 +4,7 @@ export default async function datamine(root) {
   let lastMsg = '';
   const ui = h(`<div class="wrap">
     <section class="page-head">
-      <span class="label">04 · DataMine</span>
+      <span class="label">Module · DataMine</span>
       <h1>Not every hour of driving. The moments worth labelling.</h1>
       <p class="lead">The same clips that feed road events become a regional dataset for automotive AI: chosen by how new,
         uncertain and well exposed they are, balanced with ordinary driving, split by trip and exported with their rights.</p>

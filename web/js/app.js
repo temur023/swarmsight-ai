@@ -1,12 +1,14 @@
 import { $, $$, api } from './util.js';
+import { startI18n } from './i18n.js';
 import home from './home.js';
 import trip from './trip.js';
 import review from './review.js';
 import map from './map.js';
 import datamine from './datamine.js';
 import evidence from './evidence.js';
+import safety from './safety.js';
 
-const routes = { '': home, trip, review, map, datamine, evidence };
+const routes = { '': home, trip, review, map, safety, datamine, evidence };
 let cleanup = null;
 
 async function render() {
@@ -43,6 +45,7 @@ export async function queueBadge() {
   } catch {}
 }
 
+startI18n();
 window.addEventListener('hashchange', render);
 render();
 status();

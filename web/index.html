@@ -25,13 +25,17 @@
       </a>
       <nav class="nav" id="nav" aria-label="Sections">
         <a href="#/" data-route="">Overview</a>
-        <a href="#/trip" data-route="trip"><span class="n">01</span>Upload trip</a>
-        <a href="#/review" data-route="review"><span class="n">02</span>Review<b class="badge hidden" id="qbadge"></b></a>
-        <a href="#/map" data-route="map"><span class="n">03</span>Road events &amp; API</a>
-        <a href="#/datamine" data-route="datamine"><span class="n">04</span>DataMine</a>
-        <a href="#/evidence" data-route="evidence">Evidence</a>
+        <span class="ngroup"><span class="nlabel">Trips</span>
+          <a href="#/trip" data-route="trip">Upload</a>
+          <a href="#/review" data-route="review">Review<b class="badge hidden" id="qbadge"></b></a></span>
+        <span class="ngroup"><span class="nlabel">Modules</span>
+          <a href="#/map" data-route="map" class="m-road">RoadSense</a>
+          <a href="#/safety" data-route="safety" class="m-safety">Safety</a>
+          <a href="#/datamine" data-route="datamine" class="m-data">DataMine</a></span>
+        <span class="ngroup"><a href="#/evidence" data-route="evidence">Evidence</a></span>
       </nav>
       <span class="server" id="server" title="server status"><i></i><span>connecting</span></span>
+      <button class="lang" id="lang" type="button" aria-label="Language">EN</button>
     </div>
   </header>
   <main id="view"></main>

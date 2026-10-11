@@ -49,16 +49,25 @@ p { margin: 0; }
 .site-head .in { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); height: 60px; display: flex; align-items: center; gap: 2rem; }
 .wordmark { display: flex; align-items: center; gap: .55rem; text-decoration: none; font-weight: 600; font-size: 1.02rem; letter-spacing: -0.02em; white-space: nowrap; }
 .wordmark svg { display: block; }
-.nav { display: flex; gap: 1.6rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
+.nav { display: flex; gap: 1.2rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
 .nav::-webkit-scrollbar { display: none; }
 .nav a { text-decoration: none; color: var(--ink-2); font-size: .92rem; white-space: nowrap; padding: 19px 0 17px; border-bottom: 2px solid transparent; }
 .nav a:hover { color: var(--ink); }
 .nav a.active { color: var(--ink); border-bottom-color: var(--ink); }
 .nav a .n { font: 500 10px var(--mono); color: var(--ink-3); margin-right: .35rem; vertical-align: 1px; }
+.nav .ngroup { display: flex; align-items: center; gap: 1.2rem; padding-left: 1.2rem; border-left: 1px solid var(--rule); }
+.nav .nlabel { font: 500 10px var(--mono); text-transform: uppercase; letter-spacing: .09em; color: var(--ink-3); white-space: nowrap; }
+.nav a.m-road::before, .nav a.m-safety::before, .nav a.m-data::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: .4rem; vertical-align: 1px; }
+.nav a.m-road::before { background: var(--hazard); }
+.nav a.m-safety::before { background: var(--critical); }
+.nav a.m-data::before { background: var(--network, #2350d1); }
+.lang { font: 500 11px var(--mono); letter-spacing: .06em; border: 1px solid var(--rule-2); background: var(--surface); color: var(--ink); border-radius: 5px; padding: 4px 8px; cursor: pointer; }
+.lang:hover { border-color: var(--ink); }
 .server { font: 500 11px var(--mono); color: var(--ink-3); white-space: nowrap; display: flex; align-items: center; gap: .45rem; }
 .server i { width: 7px; height: 7px; border-radius: 50%; background: var(--rule-2); display: inline-block; }
 .server.ok i { background: var(--verified); }
 .server.bad i { background: var(--critical); }
+@media (max-width: 1700px) { .server span { display: none; } }
 @media (max-width: 760px) {
   .site-head .in { height: auto; flex-wrap: wrap; gap: 0 1rem; padding-top: 10px; }
   .nav { order: 3; flex-basis: 100%; gap: 1.2rem; }

@@ -13,17 +13,29 @@ export default async function home(root) {
         a trip becomes a handful of short, anonymised, verifiable clips that feed three products at once.</p>
       <div class="row" style="margin-top:1.8rem">
         <a class="btn primary" href="#/trip">Upload a trip <span class="arr">→</span></a>
-        <a class="btn" href="#/trip">Run our Tashkent trip</a>
+        <a class="btn" href="#/trip">Run a sample trip</a>
       </div>
     </section>
 
-    <section class="flowline">
-      <div><span class="label">Trip</span><b>Video + GPS</b><p>Dashcam or phone on a taxi. Optional GPX/CSV track.</p></div>
-      <div><span class="label">Event Mining</span><b>Detect · track · propose</b><p>Road damage, collision risks, cut-ins, hard braking; clips with context; faces and plates blurred.</p></div>
-      <div><span class="label">Review</span><b>Confirm · reject · correct</b><p>Nothing is published before a person decides; every decision is logged.</p></div>
-      <div class="out"><span class="label">RoadSense</span><b>Verified road events</b><p>Deduplicated across taxis; map, GeoJSON and CIFS feeds for partners.</p></div>
-      <div class="out"><span class="label">Safety</span><b>Explained episodes</b><p>Hard braking with what the camera saw before it. Never a fine, never public.</p></div>
-      <div class="out"><span class="label">DataMine</span><b>Regional dataset</b><p>The rare, uncertain, well-exposed moments, with rights and a split by trip.</p></div>
+    <section class="section">
+      <div class="section-head"><span class="label">How it works</span><div><h2>Two steps, then three modules</h2></div></div>
+      <div class="fl-steps">
+        <a class="fl-step" href="#/trip"><span class="label">Step 1 · Upload</span><b>A trip goes in</b>
+          <p>Dashcam or phone video, a GPS track if there is one. The server finds the few moments that matter, cuts a short clip for each and blurs faces and plates.</p></a>
+        <a class="fl-step" href="#/review"><span class="label">Step 2 · Review</span><b>A person decides</b>
+          <p>Every event is a candidate until someone confirms, rejects or corrects it. Every decision is logged.</p></a>
+      </div>
+      <div class="fl-modules">
+        <a class="fl-module m-road" href="#/map"><span class="label">Module · RoadSense</span><b>Verified road events</b>
+          <p>Potholes and cracks, merged across taxis, with position and uncertainty. A map and partner feeds (GeoJSON, CIFS).</p>
+          <span class="who">for maps · road services · fleets</span><span class="go">Open RoadSense <span class="arr">→</span></span></a>
+        <a class="fl-module m-safety" href="#/safety"><span class="label">Module · Safety</span><b>Explained safety episodes</b>
+          <p>Collision risks, pedestrians in our path, cut-ins and hard braking, with what the camera saw. For coaching; never a fine, never public.</p>
+          <span class="who">for fleet safety teams</span><span class="go">Open Safety <span class="arr">→</span></span></a>
+        <a class="fl-module m-data" href="#/datamine"><span class="label">Module · DataMine</span><b>Regional dataset</b>
+          <p>The rare, uncertain, well-exposed moments plus ordinary driving, with rights, split by trip, exported as versions.</p>
+          <span class="who">for automotive AI · ADAS teams</span><span class="go">Open DataMine <span class="arr">→</span></span></a>
+      </div>
     </section>
 
     <section class="section">

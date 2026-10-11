@@ -1,4 +1,5 @@
 // Shared helpers: API calls, job streaming, DOM and canvas drawing.
+import { t as tr } from './i18n.js';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -26,7 +27,7 @@ export async function api(path, opts = {}) {
   const r = await fetch(path, o);
   if (r.status === 401 && !opts._retried) {
     // moderator actions on a protected deployment: ask once, remember in this browser
-    const t = prompt('Moderator token (set by the team for this deployment):');
+    const t = prompt(tr('Moderator token (set by the team for this deployment):'));
     if (t) { try { localStorage.setItem('swarmsight.modtoken', t.trim()); } catch {} return api(path, { ...opts, _retried: true }); }
   }
   const ct = r.headers.get('content-type') || '';
@@ -232,9 +233,9 @@ export const TYPE = {
 };
 export const typeName = t => TYPE[t] || t;
 export const KIND = {
-  road: { name: 'Road', col: 'var(--hazard)', dest: 'road events map and partner API after review' },
-  safety: { name: 'Safety', col: 'var(--critical)', dest: 'fleet safety review (never public)' },
-  baseline: { name: 'Baseline', col: 'var(--ink-3)', dest: 'dataset only: ordinary driving against selection bias' },
+  road: { name: 'Road', module: 'RoadSense', route: 'map', col: 'var(--hazard)', dest: 'road events map and partner API after review' },
+  safety: { name: 'Safety', module: 'Safety', route: 'safety', col: 'var(--critical)', dest: 'fleet safety review (never public)' },
+  baseline: { name: 'Baseline', module: 'DataMine', route: 'datamine', col: 'var(--ink-3)', dest: 'dataset only: ordinary driving against selection bias' },
 };
 export const REVIEW = { needs_review: 'needs review', confirmed: 'confirmed', corrected: 'corrected', rejected: 'rejected' };
 export const sec = s => s == null ? '—' : `${(+s).toFixed(1)} s`;
