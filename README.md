@@ -30,6 +30,12 @@ uvicorn swarmsight.server:app --port 7860
 python -m pytest -q                    # tests (pip install -r requirements-dev.txt)
 ```
 
+### Moderation on a public deployment
+
+Set `SWARMSIGHT_MODERATOR_TOKEN` (env var, or the GitHub secret of the same name for the Modal workflow) and review,
+manual geotagging and dataset export require it; the site asks for it once per browser. Uploading and reading stay open.
+Without it (default) anyone can review, which is what the demo uses.
+
 ### Deploy (GPU, Modal)
 
 See [docs/DEPLOY_MODAL.md](docs/DEPLOY_MODAL.md): `modal deploy modal_app.py`. The same app runs on CPU anywhere with the
@@ -102,6 +108,7 @@ OpenAPI at `/docs`. Main endpoints:
 POST /api/v1/trips                         video (+ track | lat/lon) + rights_scope → {trip_id, job_id}
 WS   /ws/jobs/{job_id}                     live frames and progress;  GET /api/v1/jobs/{job_id}
 GET  /api/v1/trips/{trip_id}               trip report: events, clips, reduction, timings, track
+GET  /api/v1/samples · POST /api/v1/samples/{id}/run   bundled trips, run through the same pipeline
 GET  /api/v1/observations?status=needs_review&kind=road|safety|baseline      review queue
 POST /api/v1/observations/{id}/review      {action: confirm|reject|correct, label?, note, reviewer}
 POST /api/v1/observations/{id}/location    manual geotag (recorded as such)

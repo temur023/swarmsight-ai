@@ -45,6 +45,17 @@
    "script": "scripts/build_sample.py"
   },
   {
+   "id": "tashkent_redmi_trip",
+   "name": "Tashkent street trip \u00b7 Mapillary photo sequence",
+   "module": "event mining",
+   "role": "bundled sample trip (phone-on-a-mount scenario) and the second labelled trip of the event-mining test; never used for training",
+   "source": "https://www.mapillary.com (Graph API v4), 120 consecutive photos of one capture sequence; ids in samples/tashkent_redmi.json",
+   "origin": "Mapillary contributor georgiysys; faces and plates blurred by Mapillary",
+   "license": "CC BY-SA 4.0",
+   "content": "one video frame per photo at 0.894 fps (134 s), 960 px wide; GPS from Mapillary's computed positions, speed from capture times",
+   "script": "scripts/build_mapillary_trip.py"
+  },
+  {
    "id": "coco",
    "name": "COCO-pretrained YOLO11n weights",
    "module": "all",

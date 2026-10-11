@@ -183,6 +183,15 @@ class Job:
                 "progress": round(self.progress, 3), "error": self.error}
 
 
+MAX_PENDING_JOBS = int(os.environ.get("SWARMSIGHT_MAX_PENDING_JOBS", "8"))
+
+
+def _check_capacity():
+    """A public demo must stay responsive: refuse new work while too many trips are queued."""
+    if sum(1 for j in S.jobs.values() if j.status in ("queued", "running")) >= MAX_PENDING_JOBS:
+        raise HTTPException(429, "the server is busy with other trips; try again in a minute")
+
+
 def _submit(kind: str, fn) -> Job:
     job = Job(kind)
     S.jobs[job.id] = job
@@ -341,6 +350,12 @@ async def create_trip(video: UploadFile = File(...), track: UploadFile | None = 
 
 
 def _start_trip(path: Path, filename: str | None, tr, device_id, rights_scope, sample_fps, max_seconds, keep_upload=False):
+    try:
+        _check_capacity()
+    except HTTPException:
+        if not keep_upload:
+            path.unlink(missing_ok=True)
+        raise
     device = _device_id(device_id)
     S.store.device(device)
     fps = float(np.clip(sample_fps or (10.0 if S.gpu else 5.0), 1.0, 15.0))
@@ -353,6 +368,7 @@ def _start_trip(path: Path, filename: str | None, tr, device_id, rights_scope, s
 
 
 def _start_photo(img, filename, loc, device_id, rights_scope):
+    _check_capacity()
     device = _device_id(device_id)
     S.store.device(device)
     trip_id = uuid.uuid4().hex[:12]
