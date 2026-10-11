@@ -1,0 +1,11 @@
+{
+ "source": "Wikimedia Commons",
+ "file": "File:Dashcam Recording (urban).ogv",
+ "url": "https://commons.wikimedia.org/wiki/File:Dashcam_Recording_(urban).ogv",
+ "license": "CC0 1.0",
+ "author": "Fernost",
+ "start_s": 30.0,
+ "duration_s": 90.0,
+ "fps": 15.0,
+ "anonymised": "faces and plates blurred by us (scripts/build_commons_sample.py)"
+}

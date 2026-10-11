@@ -3,8 +3,8 @@
     python scripts/smoke_deploy.py https://<workspace>--swarmsight-ai-web.modal.run [--expect-gpu]
 
 1. GET  /api/v1/health                       (the first call may include a cold start)
-2. POST /api/v1/samples/tashkent-crossing/run and poll /api/v1/jobs/{id}
-3. POST /api/v1/trips with samples/tashkent_crossing.mp4 (multipart `video` + `track`) and poll the job
+2. POST /api/v1/samples/stcroix-taxi/run and poll /api/v1/jobs/{id}
+3. POST /api/v1/trips with benchmarks/trips/tashkent_crossing.mp4 (multipart `video` + `track`) and poll the job
 4. GET  /media/<clip>: 200 + video/mp4, and a Range request answers 206
 5. WebSocket /ws/jobs/{id} replays the job to "done" (only if the `websockets` package is installed)
 
@@ -20,8 +20,8 @@ import uuid
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-VIDEO = ROOT / "samples" / "tashkent_crossing.mp4"
-TRACK = ROOT / "samples" / "tashkent_crossing.csv"
+VIDEO = ROOT / "benchmarks" / "trips" / "tashkent_crossing.mp4"
+TRACK = ROOT / "benchmarks" / "trips" / "tashkent_crossing.csv"
 
 try:
     import requests
@@ -123,8 +123,8 @@ class Smoke:
 
     def sample(self) -> dict | None:
         print("2. sample trip")
-        r = self.timed("POST sample run", lambda: http("POST", f"{self.base}/api/v1/samples/tashkent-crossing/run"))
-        if not self.check(r.status == 200, f"POST /api/v1/samples/tashkent-crossing/run -> {r.status}"):
+        r = self.timed("POST sample run", lambda: http("POST", f"{self.base}/api/v1/samples/stcroix-taxi/run"))
+        if not self.check(r.status == 200, f"POST /api/v1/samples/stcroix-taxi/run -> {r.status}"):
             return None
         started = r.json()
         job = self.timed("sample job", lambda: self.wait_job(started["job_id"]))

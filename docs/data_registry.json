@@ -37,8 +37,8 @@
    "id": "tashkent_trip",
    "name": "Tashkent crossing trip \u00b7 our dashcam",
    "module": "event mining",
-   "role": "bundled sample trip and the first labelled trip of the event-mining test (never used for training)",
-   "source": "dashcam footage recorded and provided by the SwarmSight team (samples/tashkent_crossing.mp4)",
+   "role": "first labelled trip of the event-mining test (never used for training); not a public sample on the site, since it ends at a crash",
+   "source": "dashcam footage recorded and provided by the SwarmSight team (benchmarks/trips/tashkent_crossing.mp4: benchmark only, not a public sample)",
    "origin": "one dashcam, Tashkent, 16 July 2026, 18:27:59-18:28:23 local time; ends at the moment of a crash in the crossing ahead",
    "license": "\u00a9 SwarmSight team, shared for evaluation of this prototype",
    "content": "23.8 s, 960x540, 24 fps; faces and plate areas blurred by us; GPS and speed read from the on-screen overlay into tashkent_crossing.csv",
@@ -54,6 +54,39 @@
    "license": "CC BY-SA 4.0",
    "content": "one video frame per photo at 0.894 fps (134 s), 960 px wide; GPS from Mapillary's computed positions, speed from capture times",
    "script": "scripts/build_mapillary_trip.py"
+  },
+  {
+   "id": "stcroix_taxi_trip",
+   "name": "Taxi ride, Frederiksted \u00b7 Wikimedia Commons",
+   "module": "event mining",
+   "role": "bundled sample trip for visitors without footage; not labelled, not used for training or metrics",
+   "source": "https://commons.wikimedia.org/wiki/File:Driver_view_taxi_ride_into_Frederiksted,_St._Croix,_U.S._Virgin_Islands_3-6-18.webm",
+   "origin": "John Edwards; a 15-seat taxi van, camera beside the driver, 6 March 2018; stretch 100-190 s",
+   "license": "CC BY 3.0",
+   "content": "90 s, 960 px wide, 15 fps; faces and plate areas blurred by us; no GPS track",
+   "script": "scripts/build_commons_sample.py"
+  },
+  {
+   "id": "urban_dashcam_trip",
+   "name": "Urban dashcam \u00b7 Wikimedia Commons",
+   "module": "event mining",
+   "role": "bundled sample trip for visitors without footage; not labelled, not used for training or metrics",
+   "source": "https://commons.wikimedia.org/wiki/File:Dashcam_Recording_(urban).ogv",
+   "origin": "Fernost; windscreen dashcam, 140\u00b0 lens, daylight, 18 June 2013; stretch 30-120 s",
+   "license": "CC0 1.0",
+   "content": "90 s, 960 px wide, 15 fps; faces and plate areas blurred by us; no GPS track",
+   "script": "scripts/build_commons_sample.py"
+  },
+  {
+   "id": "krakow_city_trip",
+   "name": "City driving, Krak\u00f3w \u00b7 Wikimedia Commons",
+   "module": "event mining",
+   "role": "bundled sample trip for visitors without footage; not labelled, not used for training or metrics",
+   "source": "https://commons.wikimedia.org/wiki/File:City_Driving_4K-_Krak\u00f3w_Poland_2024.webm",
+   "origin": "Relaxing Roads 4K; car camera through the city centre, published January 2024; stretch 200-290 s of the 480p transcode",
+   "license": "CC BY 3.0",
+   "content": "90 s, 960 px wide, 15 fps; faces and plate areas blurred by us; no GPS track",
+   "script": "scripts/build_commons_sample.py"
   },
   {
    "id": "coco",

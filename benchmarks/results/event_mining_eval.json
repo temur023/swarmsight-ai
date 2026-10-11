@@ -14,7 +14,7 @@
  "config": {
   "sample_fps": 5.0,
   "sample_fps_effective": {
-   "samples/tashkent_crossing.mp4": 4.8,
+   "benchmarks/trips/tashkent_crossing.mp4": 4.8,
    "samples/tashkent_redmi.mp4": 0.894
   },
   "max_seconds": 7200.0,
@@ -26,7 +26,7 @@
  "provider": "CPU",
  "videos": [
   {
-   "video": "samples/tashkent_crossing.mp4",
+   "video": "benchmarks/trips/tashkent_crossing.mp4",
    "duration_s": 23.79
   },
   {
@@ -295,7 +295,7 @@
  },
  "per_video": [
   {
-   "video": "samples/tashkent_crossing.mp4",
+   "video": "benchmarks/trips/tashkent_crossing.mp4",
    "duration_s": 23.79,
    "analysed_s": 23.79,
    "sample_fps": 4.8,
@@ -559,7 +559,7 @@
  ],
  "details": [
   {
-   "video": "samples/tashkent_crossing.mp4",
+   "video": "benchmarks/trips/tashkent_crossing.mp4",
    "events": [
     {
      "type": "vru_near_path",

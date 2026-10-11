@@ -17,7 +17,7 @@ server or by a script in this repository. Nothing is hard-coded: a trip with no 
 
 * **Web:** open the deployed site → *Upload a trip*. Drop any dashcam or phone video (MP4/MOV/WEBM, first 2 minutes
   analysed) or a road photo; optionally add a GPS track (GPX, or CSV `t,lat,lon[,speed_kmh][,accel_long_ms2]`) or pin one
-  position. No footage at hand: run one of the bundled Tashkent trips, which go through exactly the same code path.
+  position. No footage at hand: run one of the bundled trips (a taxi ride, a Tashkent street, a city dashcam, Kraków), which go through exactly the same code path.
 * **Then:** *Review* (confirm / reject / correct each candidate) → *Road events & API* (verified events, partner feeds)
   → *DataMine* (export a dataset version as ZIP) → *Evidence* (measured quality, speed, failures).
 
@@ -126,7 +126,8 @@ GET  /api/v1/health · /api/v1/metrics · /api/v1/data
 |---|---|---|
 | RDD2022 (Arya et al., 2022) | training and held-out test of the road-damage model | CC BY-SA 4.0 |
 | Mapillary street photos, Tashkent | Tashkent test set (never trained on), one sample trip, photo samples | CC BY-SA 4.0, contributors credited in `samples/*.json` and the manifest |
-| Our dashcam trip, Tashkent, 16 July 2026 | sample trip and labelled test trip | © SwarmSight team; faces and plates blurred by us |
+| Our dashcam trip, Tashkent, 16 July 2026 | labelled test trip (`benchmarks/trips/`, not a public sample: it ends at a crash) | © SwarmSight team; faces and plates blurred by us |
+| Driving videos from Wikimedia Commons: taxi ride in Frederiksted (John Edwards), urban dashcam (Fernost), Kraków city driving (Relaxing Roads 4K) | three sample trips, 90 s each (`scripts/build_commons_sample.py`) | CC BY 3.0, CC0 1.0, CC BY 3.0; source and stretch in `samples/*.json`; faces and plates blurred by us |
 | YOLO11n (Ultralytics), COCO weights | road users | AGPL-3.0 |
 | Our road-damage YOLO11n | road damage | trained by us with Ultralytics (AGPL-3.0) |
 
@@ -150,6 +151,6 @@ swarmsight/   mining.py (Event Mining Engine) · events.py (fusion, trust, revie
 web/          single-page UI (no build step)
 benchmarks/   event_mining_eval.py, event_labels.csv, results/
 training/     road-damage data preparation, training and evaluation
-samples/      bundled trips (anonymised video + GPS) · scripts/: how they were built
+samples/      bundled trips (anonymised video, GPS where it exists) · benchmarks/trips/: labelled test trips · scripts/: how they were built
 models/       ONNX weights
 ```

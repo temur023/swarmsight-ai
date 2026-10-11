@@ -1,14 +1,13 @@
 {
  "samples": [
   {
-   "id": "tashkent-crossing",
-   "title": "Tashkent crossing, 16 July 2026, 18:28",
-   "video": "tashkent_crossing.mp4",
-   "poster": "tashkent_crossing.jpg",
-   "track": "tashkent_crossing.csv",
-   "track_offset_s": 0,
-   "duration_s": 23.8,
-   "about": "Our own dashcam: waiting at a red light, then pulling into the crossing; it ends at the moment a motorcycle hits the car ahead. Faces and plates blurred; GPS and speed read from the dashcam overlay."
+   "id": "stcroix-taxi",
+   "title": "Taxi ride, Frederiksted (St. Croix), 90 s",
+   "video": "stcroix_taxi.mp4",
+   "poster": "stcroix_taxi.jpg",
+   "duration_s": 90.0,
+   "about": "A real taxi (a 15-seat van) through town to the cruise pier, filmed from beside the driver: parked cars, narrow streets, pedestrians on the pier. No GPS track. Wikimedia Commons, CC BY 3.0, John Edwards; faces and plates blurred by us.",
+   "license": "CC BY 3.0 \u00b7 John Edwards \u00b7 Wikimedia Commons"
   },
   {
    "id": "tashkent-redmi",
@@ -20,6 +19,24 @@
    "duration_s": 134.2,
    "about": "120 photos a phone took about once a second while driving (Mapillary, CC BY-SA 4.0, contributor georgiysys; faces and plates blurred by Mapillary), one video frame per photo, with the phone's GPS. The phone-on-a-mount scenario of a taxi pilot.",
    "license": "CC BY-SA 4.0 \u00b7 Mapillary"
+  },
+  {
+   "id": "urban-dashcam",
+   "title": "Dashcam, office district, 90 s",
+   "video": "urban_dashcam.mp4",
+   "poster": "urban_dashcam.jpg",
+   "duration_s": 90.0,
+   "about": "A windscreen dashcam (140\u00b0 lens) on city streets and an arterial road in strong sun and glare. No GPS track. Wikimedia Commons, CC0, Fernost; faces and plates blurred by us.",
+   "license": "CC0 1.0 \u00b7 Fernost \u00b7 Wikimedia Commons"
+  },
+  {
+   "id": "krakow-city",
+   "title": "City centre, Krak\u00f3w, 90 s",
+   "video": "krakow_city.mp4",
+   "poster": "krakow_city.jpg",
+   "duration_s": 90.0,
+   "about": "A car camera through Krak\u00f3w's centre: tram tracks, parked cars on both sides, a queue behind an SUV. No GPS track. Wikimedia Commons, CC BY 3.0, Relaxing Roads 4K; faces and plates blurred by us.",
+   "license": "CC BY 3.0 \u00b7 Relaxing Roads 4K \u00b7 Wikimedia Commons"
   }
  ]
 }

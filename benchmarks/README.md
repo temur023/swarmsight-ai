@@ -23,7 +23,7 @@ hash of `swarmsight/mining.py`, the model versions, provider, date and every pre
 ### Labelling a new video
 
 1. Put the video under the `--videos` directory (anonymise first) and, if you have it, its telemetry as
-   `<stem>.csv` or `<stem>.gpx` in the `--tracks` directory.
+   `<stem>.csv` or `<stem>.gpx` in the `--tracks` directory or next to the video.
 2. Watch the **whole** video. Every event of the types below that is present must get a row, otherwise a correct
    detection counts as a false alert. Extract frames every 0.5 s (and every frame around events) if it helps.
    For a photo sequence turned into a video (one frame per photo, e.g. Mapillary at ~1 fps) look at every photo and
@@ -76,7 +76,7 @@ trips/2026-10-09_ring_road.mp4,0,312.4,none,"watched all of it, nothing to repor
 
 | trip | source | length | labels |
 |---|---|---|---|
-| `samples/tashkent_crossing.mp4` | team dashcam, 24 fps video | 23.8 s | `vru_near_path` (traffic officer we pass at 1-2 m), `forward_collision_risk` (motorcycle hits the car ahead in the last 0.4 s; judgement call, see note) |
+| `benchmarks/trips/tashkent_crossing.mp4` | team dashcam, 24 fps video | 23.8 s | `vru_near_path` (traffic officer we pass at 1-2 m), `forward_collision_risk` (motorcycle hits the car ahead in the last 0.4 s; judgement call, see note) |
 | `samples/tashkent_redmi.mp4` | one phone's Mapillary photo sequence, 120 photos at 0.894 fps | 134.2 s | 20 damage rows (alligator / longitudinal / transverse / one small pothole) = 8 road-damage stretches; no safety events (checked: the pipeline's cut_in and hard_braking there are false alarms, see the comment row) |
 
 `results/event_mining_eval.json` holds the latest run (date, code hash and label hash inside). Run of 2026-10-10

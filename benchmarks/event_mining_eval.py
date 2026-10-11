@@ -79,14 +79,15 @@ def video_duration(path: Path) -> float | None:
     return round(n / fps, 2) if n > 0 else None
 
 
-def find_track(tracks_dir: Path | None, video: str) -> Path | None:
-    if tracks_dir is None:
-        return None
+def find_track(tracks_dir: Path | None, video: str, videos_dir: Path | None = None) -> Path | None:
+    """<video stem>.csv|.gpx in --tracks, else next to the video itself."""
     stem = Path(video).stem
-    for ext in (".csv", ".gpx", ".CSV", ".GPX"):
-        p = tracks_dir / f"{stem}{ext}"
-        if p.exists():
-            return p
+    dirs = [d for d in (tracks_dir, (videos_dir / video).parent if videos_dir is not None else None) if d is not None]
+    for d in dirs:
+        for ext in (".csv", ".gpx", ".CSV", ".GPX"):
+            p = d / f"{stem}{ext}"
+            if p.exists():
+                return p
     return None
 
 
@@ -159,7 +160,7 @@ def load_labels(path: Path, videos_dir: Path, tracks_dir: Path | None):
                 if b["start_s"] <= a["end_s"]:
                     warnings.append(f"{name}: {typ} intervals on lines {a['line']} and {b['line']} overlap; "
                                     "merge them if they are one event")
-        v["track"] = find_track(tracks_dir, name)
+        v["track"] = find_track(tracks_dir, name, videos_dir)
     return videos, errors, warnings
 
 

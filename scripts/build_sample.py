@@ -1,4 +1,5 @@
-"""Package the team's Tashkent dashcam trip as the bundled sample (samples/): anonymised video + telemetry CSV.
+"""Package the team's Tashkent dashcam trip as a labelled benchmark trip (benchmarks/trips/): anonymised video + telemetry CSV.
+It is not a public sample on the site (it ends at a crash).
 
 Faces (top of every person box) and plate bands (lower part of every vehicle box, full width) are blurred using the
 detections of each frame and its four neighbours, so one missed detection does not leak a face or a plate.  The
@@ -34,7 +35,7 @@ TELEMETRY = [
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True)
-    ap.add_argument("--out", default="samples")
+    ap.add_argument("--out", default="benchmarks/trips")
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(exist_ok=True)

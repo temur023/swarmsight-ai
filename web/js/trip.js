@@ -153,7 +153,7 @@ async function upload(root) {
       <img src="/samples/${esc(st.poster)}" alt="">
       <div><b>${esc(st.title)}</b><p class="faint" style="font-size:.86rem;margin:.3rem 0 .7rem">${esc(st.about)}</p>
         <button class="btn primary">Run this trip through the pipeline <span class="arr">→</span></button>
-        <p class="mono faint" style="font-size:.72rem;margin-top:.5rem">same code path as an upload · ${st.duration_s} s · with its GPS track</p></div>
+        <p class="mono faint" style="font-size:.72rem;margin-top:.5rem">same code path as an upload · ${st.duration_s} s · ${st.track ? 'with its GPS track' : 'no GPS: place it on the map in Review'}</p></div>
     </div>`);
     card.querySelector('button').onclick = async () => {
       const res = await api(`/api/v1/samples/${st.id}/run?device_id=${encodeURIComponent(deviceId())}`, { method: 'POST' });

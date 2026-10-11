@@ -8,7 +8,7 @@ from pathlib import Path
 from conftest import ROOT, wait_job
 
 RUNTIME = Path(os.environ["SWARMSIGHT_RUNTIME"])
-VIDEO = ROOT / "samples" / "tashkent_crossing.mp4"
+VIDEO = ROOT / "benchmarks" / "trips" / "tashkent_crossing.mp4"
 
 
 def test_health(client):
@@ -22,8 +22,12 @@ def test_health(client):
 def test_web_and_samples(client):
     assert client.get("/").status_code == 200
     s = client.get("/api/v1/samples").json()["samples"]
-    assert "tashkent-crossing" in [x["id"] for x in s]
-    assert client.get("/samples/tashkent_crossing.jpg").status_code == 200
+    ids = [x["id"] for x in s]
+    assert {"stcroix-taxi", "tashkent-redmi", "urban-dashcam", "krakow-city"} <= set(ids)
+    assert "tashkent-crossing" not in ids
+    for x in s:
+        assert client.get(f"/samples/{x['poster']}").status_code == 200
+        assert (ROOT / "samples" / x["video"]).is_file()
 
 
 def test_sample_trip_report(client, sample_run):
