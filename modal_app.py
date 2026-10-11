@@ -97,6 +97,7 @@ image = (
     .add_local_dir(HERE / "benchmarks" / "results", f"{APP_DIR}/benchmarks/results", ignore=_ignore)
     .add_local_file(HERE / "benchmarks" / "event_labels.csv", f"{APP_DIR}/benchmarks/event_labels.csv")  # reference labels
     .add_local_file(HERE / "benchmarks" / "event_labels_ru.csv", f"{APP_DIR}/benchmarks/event_labels_ru.csv")
+    .add_local_file(HERE / "benchmarks" / "demo_labels.csv", f"{APP_DIR}/benchmarks/demo_labels.csv")
     .add_local_dir(HERE / "datasets" / "tashkent", f"{APP_DIR}/datasets/tashkent", ignore=_ignore)
 )
 

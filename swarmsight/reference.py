@@ -2,8 +2,8 @@
 
 A trip is compared only when its file is byte-identical to a labelled video (SHA-1 of the bytes), so any upload of
 that file, from any browser, is checked against the same labels; other trips have no reference.  Labels come from
-benchmarks/event_labels.csv (the event-mining benchmark), with optional Russian descriptions in
-benchmarks/event_labels_ru.csv (same rows).  Nothing here depends on the model's output for that trip.
+benchmarks/event_labels.csv (the event-mining benchmark) and benchmarks/demo_labels.csv (demo trips labelled the
+same way, not part of the benchmark yet), with optional Russian descriptions in benchmarks/event_labels_ru.csv.  Nothing here depends on the model's output for that trip.
 
 Rule (as in benchmarks/event_mining_eval.py, at family level): an observation and a labelled moment match when
 [t_start - tol, t_end + tol] of the observation overlaps the labelled interval and the types are compatible (the same
@@ -43,7 +43,8 @@ def _rows(path: Path) -> list[dict]:
 class Reference:
     def __init__(self, root: Path):
         self.root = root
-        self.labels_path = root / "benchmarks" / "event_labels.csv"
+        # the benchmark's labels, plus labels of demo trips that are not (yet) part of the benchmark
+        self.label_paths = [root / "benchmarks" / "event_labels.csv", root / "benchmarks" / "demo_labels.csv"]
         self.ru_path = root / "benchmarks" / "event_labels_ru.csv"
         self._index: dict[str, str] | None = None  # sha1 -> labelled video path (as written in the label file)
         self._lock = threading.Lock()
@@ -52,7 +53,7 @@ class Reference:
         with self._lock:
             if self._index is None:
                 idx = {}
-                for v in sorted({r["video"] for r in _rows(self.labels_path)}):
+                for v in sorted({r["video"] for p in self.label_paths for r in _rows(p)}):
                     p = self.root / v
                     if p.is_file():
                         idx[_sha1(p)] = v
@@ -62,7 +63,7 @@ class Reference:
     def labels(self, video: str) -> list[dict]:
         ru = {(r["video"], r["start_s"], r["type"]): r.get("note", "") for r in _rows(self.ru_path)}
         out = []
-        for r in _rows(self.labels_path):
+        for r in (r for p in self.label_paths for r in _rows(p)):
             if r["video"] != video or r["type"] == "none":
                 continue
             out.append({"start_s": float(r["start_s"]), "end_s": float(r["end_s"]), "type": r["type"],
