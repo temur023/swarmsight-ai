@@ -88,6 +88,7 @@ All on data the models never saw in training. Result files: `benchmarks/results/
 | … in Tashkent (image level) | **AP 0.77** (random 0.45), precision 81 %, recall 60 % | 77 Mapillary street photos, our labels | `training/eval_tashkent.py` |
 | Event mining on labelled trips | **7 of 10 events found, 0 false alerts** (7 more proposals repeat a stretch already found); event clips keep 35 % of the video | 2 Tashkent trips, 158 s, labelled by us (`benchmarks/event_labels.csv`) | `benchmarks/event_mining_eval.py` |
 | Speed (CPU, 4 vCPU) | ~110 ms per analysed frame for both detectors + tracking; ~33 s server time per minute of dashcam video at 5 fps | sample trips | same |
+| Speed (GPU, Modal L4) | **21.5 ms** per analysed frame (p50; p95 27 ms) for both detectors + tracking; ~17 s analysis + ~3.5 s clips per minute of dashcam video at 12 fps | our 23.8 s crossing trip, warm container | `scripts/smoke_deploy.py` |
 
 Event-level numbers come from one or two short trips labelled by the team and have wide confidence intervals; they show
 how the pipeline is measured, not how good it is. More labelled trips are the first task of the pilot.
