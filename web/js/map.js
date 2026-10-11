@@ -1,4 +1,5 @@
 import { api, baseLayer, esc, fmtTime, h, media, TASHKENT, typeName } from './util.js';
+import { demoBlock } from './demo.js';
 
 const COL = { candidate: '#d4800f', corroborated: '#2350d1', verified: '#1d7f55', rejected: '#c23a2e', expired: '#8b9099' };
 const FILTERS = { verified: 'verified', open: 'candidate,corroborated', all: 'candidate,corroborated,verified,rejected,expired' };
@@ -12,6 +13,7 @@ export default async function map(root, rest) {
         independent devices; a moderator's confirmation makes it verified. Only verified events reach partners, without
         device identities, routes or video.</p>
     </section>
+    <div id="demo"></div>
     <div class="row between" style="margin-bottom:1rem">
       <div class="seg" id="f"><button data-f="verified">Verified</button><button data-f="open">Open</button><button data-f="all">All</button></div>
       <div class="legend">${Object.entries(COL).map(([k, c]) => `<span><i style="background:${c};height:8px;width:8px;border-radius:50%"></i>${k}</span>`).join('')}</div>
@@ -20,14 +22,16 @@ export default async function map(root, rest) {
       <div class="map" id="emap"></div>
       <aside><div class="panel" id="side"><span class="label">Event</span><p class="faint">Click an event on the map.</p></div></aside>
     </div>
+    <details class="more"><summary>Partner API: feeds for maps, road services and fleets</summary>
     <section class="section">
       <div class="section-head"><span class="label">Partner API</span>
         <div><h2>Read-only feeds for maps, road services and fleets</h2>
           <p class="muted">Live on this server. In a pilot: API keys, rate limits, an audit log and a data-use agreement per partner.</p></div></div>
       <div class="scroll-x"><table class="tbl"><thead><tr><th>Endpoint</th><th>What it returns</th><th class="r">Now</th></tr></thead><tbody id="apis"></tbody></table></div>
-    </section>
+    </section></details>
   </div>`);
   root.append(ui);
+  demoBlock(ui.querySelector('#demo'), 'tashkent-redmi', 'road', 'RoadSense');
   const m = L.map(ui.querySelector('#emap')).setView(TASHKENT, 12);
   baseLayer().addTo(m);
   const layer = L.layerGroup().addTo(m);

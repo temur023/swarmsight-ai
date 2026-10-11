@@ -69,6 +69,21 @@
 @media (max-width: 860px) { .fl-modules { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .fl-steps { grid-template-columns: 1fr; } }
 .kgroup { margin-top: 1.6rem; }
+.demo { margin-bottom: 2rem; border-top: 3px solid var(--ink); }
+.demo h2 { margin: .4rem 0 1rem; font-size: 1.35rem; }
+.demo-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.2rem; align-items: start; }
+.demo-grid video { width: 100%; border-radius: 6px; background: var(--instrument); }
+@media (max-width: 860px) { .demo-grid { grid-template-columns: 1fr; } }
+.demo .facts { display: grid; gap: .6rem; } .demo .facts .label { display: block; margin-bottom: .1rem; } .demo .facts b { font-weight: 500; font-size: .92rem; }
+.demo-acc { height: 8px; border-radius: 4px; background: var(--rule); overflow: hidden; } .demo-acc span { display: block; height: 100%; background: var(--verified); }
+.demo-moments { margin-top: 1.2rem; } .demo-moments > .label { display: block; margin-bottom: .5rem; }
+.mlist { display: grid; gap: .35rem; max-height: 340px; overflow-y: auto; }
+.mrow { display: grid; grid-template-columns: 110px 190px 1fr auto; gap: .8rem; align-items: center; text-align: left; border: 1px solid var(--rule); background: var(--surface); border-radius: 6px; padding: .45rem .7rem; cursor: pointer; font: 400 .86rem var(--sans); color: var(--ink); }
+.mrow:hover { border-color: var(--ink); } .mrow .mtext { color: var(--ink-2); font-size: .82rem; }
+@media (max-width: 760px) { .mrow { grid-template-columns: 1fr auto; } .mrow .mtext { grid-column: 1 / -1; } }
+details.more { margin: 1.5rem 0; border-top: 1px solid var(--rule); padding-top: .8rem; }
+details.more > summary { cursor: pointer; font-weight: 500; color: var(--ink-2); }
+details.more[open] > summary { margin-bottom: .6rem; }
 .cols.c2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; } @media (max-width: 760px) { .cols.c2 { grid-template-columns: 1fr; } }
 .vs .panel:first-child { border-top: 3px solid var(--ink-3); } .vs .panel:last-child { border-top: 3px solid var(--critical); }
 .vs p { margin-top: .4rem; font-size: .92rem; color: var(--ink-2); }

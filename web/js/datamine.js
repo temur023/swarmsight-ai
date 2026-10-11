@@ -1,4 +1,5 @@
 import { api, esc, figure, fmtTime, h, media, pct, typeName } from './util.js';
+import { demoBlock } from './demo.js';
 
 export default async function datamine(root) {
   let lastMsg = '';
@@ -9,9 +10,11 @@ export default async function datamine(root) {
       <p class="lead">The same clips that feed road events become a regional dataset for automotive AI: chosen by how new,
         uncertain and well exposed they are, balanced with ordinary driving, split by trip and exported with their rights.</p>
     </section>
+    <div id="demo"></div>
     <div id="body"><p class="faint">Loading…</p></div>
   </div>`);
   root.append(ui);
+  demoBlock(ui.querySelector('#demo'), 'tashkent-redmi', 'road', 'DataMine');
   async function load() {
     const s = await api('/api/v1/datasets/summary');
     const lv = s.by_level || {};
@@ -58,14 +61,14 @@ export default async function datamine(root) {
         load();
       } catch (e) { ex.querySelector('#emsg').textContent = e.message; }
     };
-    body.append(h(`<section class="section"><div class="section-head"><span class="label">Rules</span><div>
+    body.append(h(`<details class="more"><summary>Rules of the dataset</summary><section class="section"><div class="section-head"><span class="label">Rules</span><div>
       <ul class="rules">
         <li><b>Rights first.</b> ${esc(s.rights.road_and_dataset)}. Trips uploaded as "${esc(s.rights.road_only)}" never enter an export.</li>
         <li><b>Not only incidents.</b> Each trip adds one random stretch of ordinary driving, so the dataset can still tell how rare an incident is.</li>
         <li><b>No leakage.</b> Split by trip: frames of one drive never sit in both train and test.</li>
         <li><b>Honest levels.</b> raw candidate → reviewed (a person confirmed the label). Boxes are model pre-annotations.</li>
         <li><b>Privacy.</b> Faces and plate areas are blurred from detector boxes before anything is stored. Best effort, not a guarantee.</li>
-      </ul></div></div></section>`));
+      </ul></div></div></section></details>`));
   }
   await load();
 }

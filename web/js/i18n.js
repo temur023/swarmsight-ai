@@ -329,6 +329,14 @@ const RU = {
   'no telemetry in this trip: sensors know nothing about this moment': 'в этой поездке нет телеметрии: датчики ничего не знают об этом моменте',
   'no hard braking: for sensors this moment does not exist': 'резкого торможения не было: для датчиков этого момента не существует',
   'no reason': 'без причины',
+  'Full trip report →': 'Полный разбор поездки →', 'Run the demo trip': 'Запустить демо-поездку',
+  'Not run on this server yet. The system processes it exactly like an upload; the facts and the accuracy appear here.':
+    'На этом сервере ещё не запускалась. Система обрабатывает её так же, как любую загрузку; факты и точность появятся здесь.',
+  'Video': 'Видео', 'Found by the system': 'Нашла система', 'Accuracy against our labels': 'Точность по нашей разметке', 'Accuracy': 'Точность',
+  'no labels for this footage': 'для этого видео нет разметки', 'no GPS': 'без GPS', 'Moments · click to watch': 'Моменты · нажмите, чтобы посмотреть',
+  'system': 'система', 'No moments of this module in this trip.': 'В этой поездке нет моментов этого модуля.',
+  'Partner API: feeds for maps, road services and fleets': 'API для партнёров: фиды для карт, дорожных служб и таксопарков',
+  'Episodes by type': 'Эпизоды по типам', 'Rules of the dataset': 'Правила датасета',
   'Moderator token (set by the team for this deployment):': 'Токен модератора (задаётся командой для этого сайта):',
 };
 
@@ -401,6 +409,13 @@ const PATTERNS = [
   [/^(\d+) independent devices, confidence ([\d.]+)$/, (m, n, c) => `${n} независимых источника, уверенность ${c}`],
   [/^(\d+) device\(s\), confidence ([\d.]+)$/, (m, n, c) => `${n} ${pl(+n, 'устройство', 'устройства', 'устройств')}, уверенность ${c}`],
   [/^±(\d+) m$/, (m, n) => `±${n} м`],
+  [/^Demo trip · (\w+)$/, (m, n) => `Демо-поездка · ${n}`],
+  [/^processing · (\d+)%$/, (m, n) => `обработка · ${n}%`],
+  [/^(\d+)\/(\d+) labelled moments found$/, (m, a, b) => `найдено ${a} из ${b} размеченных моментов`],
+  [/^(\d+)\/(\d+) observations correct$/, (m, a, b) => `верно ${a} из ${b} наблюдений`],
+  [/^(\d+) false alert\(s\)$/, (m, n) => `ложных: ${n}`],
+  [/^precision (\d+%)$/, (m, p) => `точность ${p}`],
+  [/^(\d+) observation\(s\)$/, (m, n) => `${n} ${pl(+n, 'наблюдение', 'наблюдения', 'наблюдений')}`],
   [/^analysing$/, () => 'анализ'],
   [/^t = ([\d.]+) s$/, (m, v) => `t = ${v} с`],
   [/^Download$/, () => 'Скачать'], [/^([\d.]+) MB$/, (m, n) => `${n} МБ`],

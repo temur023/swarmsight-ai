@@ -1,5 +1,6 @@
 import { api, clipPlayer, esc, figure, h, locText, typeName } from './util.js';
 import { evidenceText, statusChip } from './components.js';
+import { demoBlock } from './demo.js';
 
 const TYPES = ['hard_braking', 'forward_collision_risk', 'vru_near_path', 'cut_in'];
 
@@ -11,9 +12,11 @@ export default async function safety(root) {
       <p class="lead">Safety episodes for the fleet's safety team: collision risks, pedestrians or riders in our path, cut-ins and hard
         braking, each with its clip. They are for coaching, never a fine and never public, and none of them claims a cause or a fault.</p>
     </section>
+    <div id="demo"></div>
     <div id="body"><p class="faint">Loading…</p></div>
   </div>`);
   root.append(ui);
+  demoBlock(ui.querySelector('#demo'), 'stcroix-taxi', 'safety', 'Safety');
   const r = await api('/api/v1/safety/reviews?limit=60').catch(() => ({ observations: [] }));
   const obs = r.observations || [];
   const body = ui.querySelector('#body');
@@ -46,10 +49,10 @@ export default async function safety(root) {
     return b ? `hard braking at ${b.t_peak.toFixed(1)} s · no reason` : 'no hard braking: for sensors this moment does not exist';
   };
   const counts = TYPES.map(t => [t, obs.filter(o => o.label === t).length]);
-  body.append(h(`<section class="section"><div class="section-head"><span class="label">By type</span>
+  body.append(h(`<details class="more"><summary>Episodes by type</summary><section class="section"><div class="section-head"><span class="label">By type</span>
     <div><p class="muted">What one front camera and the phone's telemetry can support, nothing more.</p></div></div>
     <div class="scroll-x"><table class="tbl"><tbody>${counts.map(([t, c]) => `<tr><td>${esc(typeName(t))}</td><td class="r">${c}</td></tr>`).join('')}</tbody></table></div>
-  </section>`));
+  </section></details>`));
   const list = h(`<section class="section"><div class="section-head"><span class="label">Episodes</span>
     <div><p class="muted">Newest first. Decide on them in the <a href="#/review">review center</a> (Safety tab).</p></div></div>
     <div class="cards" id="cards"></div></section>`);

@@ -23,7 +23,7 @@ def test_web_and_samples(client):
     assert client.get("/").status_code == 200
     s = client.get("/api/v1/samples").json()["samples"]
     ids = [x["id"] for x in s]
-    assert {"stcroix-taxi", "tashkent-redmi", "urban-dashcam", "krakow-city"} <= set(ids)
+    assert {"stcroix-taxi", "tashkent-redmi"} <= set(ids)
     assert "tashkent-crossing" not in ids
     for x in s:
         assert client.get(f"/samples/{x['poster']}").status_code == 200

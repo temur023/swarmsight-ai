@@ -1,15 +1,6 @@
 {
  "samples": [
   {
-   "id": "stcroix-taxi",
-   "title": "Taxi ride, Frederiksted (St. Croix), 90 s",
-   "video": "stcroix_taxi.mp4",
-   "poster": "stcroix_taxi.jpg",
-   "duration_s": 90.0,
-   "about": "A real taxi (a 15-seat van) through town to the cruise pier, filmed from beside the driver: parked cars, narrow streets, pedestrians on the pier. No GPS track. Wikimedia Commons, CC BY 3.0, John Edwards; faces and plates blurred by us.",
-   "license": "CC BY 3.0 \u00b7 John Edwards \u00b7 Wikimedia Commons"
-  },
-  {
    "id": "tashkent-redmi",
    "title": "Tashkent, 134 s along one street, phone in a car",
    "video": "tashkent_redmi.mp4",
@@ -21,22 +12,13 @@
    "license": "CC BY-SA 4.0 \u00b7 Mapillary"
   },
   {
-   "id": "urban-dashcam",
-   "title": "Dashcam, office district, 90 s",
-   "video": "urban_dashcam.mp4",
-   "poster": "urban_dashcam.jpg",
+   "id": "stcroix-taxi",
+   "title": "Taxi ride, Frederiksted (St. Croix), 90 s",
+   "video": "stcroix_taxi.mp4",
+   "poster": "stcroix_taxi.jpg",
    "duration_s": 90.0,
-   "about": "A windscreen dashcam (140\u00b0 lens) on city streets and an arterial road in strong sun and glare. No GPS track. Wikimedia Commons, CC0, Fernost; faces and plates blurred by us.",
-   "license": "CC0 1.0 \u00b7 Fernost \u00b7 Wikimedia Commons"
-  },
-  {
-   "id": "krakow-city",
-   "title": "City centre, Krak\u00f3w, 90 s",
-   "video": "krakow_city.mp4",
-   "poster": "krakow_city.jpg",
-   "duration_s": 90.0,
-   "about": "A car camera through Krak\u00f3w's centre: tram tracks, parked cars on both sides, a queue behind an SUV. No GPS track. Wikimedia Commons, CC BY 3.0, Relaxing Roads 4K; faces and plates blurred by us.",
-   "license": "CC BY 3.0 \u00b7 Relaxing Roads 4K \u00b7 Wikimedia Commons"
+   "about": "A real taxi (a 15-seat van) through town to the cruise pier, filmed from beside the driver: parked cars, narrow streets, pedestrians on the pier. No GPS track. Wikimedia Commons, CC BY 3.0, John Edwards; faces and plates blurred by us.",
+   "license": "CC BY 3.0 \u00b7 John Edwards \u00b7 Wikimedia Commons"
   }
  ]
 }

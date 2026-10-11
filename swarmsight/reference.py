@@ -74,9 +74,12 @@ class Reference:
         video = self.index().get(trip.get("content_sha1") or "")
         if not video:
             return {"available": False}
-        gts = self.labels(video)
         fps = (trip.get("info") or {}).get("sample_fps") or 5.0
         tol = round(max(1.0, 1.0 / fps), 3)
+        # only moments inside the stretch the system analysed (an upload is cut to max_seconds)
+        analysed = trip.get("analysed_s") or (trip.get("info") or {}).get("analysed_s") or 1e9
+        every = self.labels(video)
+        gts = [g for g in every if g["start_s"] <= analysed + tol]
         preds = [o for o in observations if o["kind"] != "baseline"]
         for g in gts:
             g["matches"], g["exact"] = [], False
@@ -93,7 +96,8 @@ class Reference:
         n_ok = sum(o["correct"] for o in out_obs)
         return {
             "available": True, "video": video, "tolerance_s": tol,
-            "labels": [{**g, "found": bool(g["matches"])} for g in gts],
+            "labels": [{**g, "found": bool(g["matches"])} for g in gts], "analysed_s": analysed,
+            "not_analysed": len(every) - len(gts),
             "observations": out_obs,
             "summary": {"labelled": len(gts), "found": len(found), "found_exact_type": sum(g["exact"] for g in gts),
                         "observations": len(out_obs), "correct": n_ok, "false_alerts": len(out_obs) - n_ok,

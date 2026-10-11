@@ -462,7 +462,7 @@ def run_sample(name: str, device_id: str | None = None, rights_scope: str = "roa
     if not s:
         raise HTTPException(404, "unknown sample")
     tr = parse_track((SAMPLES_DIR / s["track"]).read_bytes(), s["track"], s.get("track_offset_s", 0.0)) if s.get("track") else None
-    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, f"sample:{name}", rights_scope, None, 120.0, keep_upload=True,
+    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, f"sample:{name}", rights_scope, None, 300.0, keep_upload=True,
                        content_sha1=_file_sha1(SAMPLES_DIR / s["video"]))
 
 
