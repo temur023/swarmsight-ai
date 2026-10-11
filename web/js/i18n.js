@@ -160,7 +160,7 @@ const RU = {
   'candidate': 'кандидат', 'corroborated': 'подтверждено машинами', 'verified': 'подтверждено', 'expired': 'истекло',
   'Event': 'Событие', 'Click an event on the map.': 'Нажмите на событие на карте.',
   'No verified events yet. Confirm road damage in the': 'Подтверждённых событий пока нет. Подтвердите дефекты в',
-  ', or look at open events.': 'или посмотрите открытые события.', 'No events yet.': 'Событий пока нет.', 'with a GPS track or a pin.': 'с GPS-треком или точкой.',
+  ', or look at open events.': ', или посмотрите открытые события.', 'No events yet.': 'Событий пока нет.', 'with a GPS track or a pin.': 'с GPS-треком или точкой.',
   'Confidence': 'Уверенность', 'Position': 'Координаты', 'Seen': 'Замечено', 'Valid until': 'Действует до', 'unless re-observed': 'если не замечено снова',
   'Observations': 'Наблюдения', 'History': 'История', 'evidence': 'доказательство',
   'Partner API': 'API для партнёров', 'Read-only feeds for maps, road services and fleets': 'Фиды только для чтения для карт, дорожных служб и таксопарков',
