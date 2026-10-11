@@ -291,6 +291,11 @@ const RU = {
   'pothole, alligator, transverse and longitudinal cracks': 'ямы, сетка трещин, поперечные и продольные трещины',
   'dashcam footage recorded and provided by the SwarmSight team (benchmarks/trips/tashkent_crossing.mp4: benchmark only, not a public sample)':
     'запись регистратора, снятая и предоставленная командой SwarmSight (benchmarks/trips/tashkent_crossing.mp4: только для бенчмарка, не публичный пример)',
+  'upload complete, starting the analysis…': 'файл загружен, запускаем анализ…',
+  'This is a GPS track, not a video: choose it in the GPS track field on the right, then drop the video here.':
+    'Это GPS-трек, а не видео: выберите его в поле «GPS-трек» справа, а сюда перетащите видео.',
+  'Not a video or a photo: drop an MP4, MOV or WEBM video, or a JPG/PNG photo.': 'Это не видео и не фото: перетащите видео MP4, MOV или WEBM либо фото JPG/PNG.',
+  'network error: the upload did not reach the server': 'ошибка сети: файл не дошёл до сервера',
   'Moderator token (set by the team for this deployment):': 'Токен модератора (задаётся командой для этого сайта):',
 };
 
@@ -352,6 +357,7 @@ const PATTERNS = [
   [/^\(model: (.+)\)$/, (m, t) => `(модель: ${RU[t] || t})`],
   [/^(.+) unless re-observed$/, (m, d) => `${d}, если не замечено снова`],
   [/^uploading ([\d.]+) MB…(.*)$/, (m, n, rest) => `загрузка ${n} МБ…${rest ? ' ' + (RU[rest.trim()] || rest.trim()) : ''}`],
+  [/^uploading ([\d.]+) MB$/, (m, n) => `загрузка ${n} МБ`],
   [/^analysing$/, () => 'анализ'],
   [/^t = ([\d.]+) s$/, (m, v) => `t = ${v} с`],
   [/^Download$/, () => 'Скачать'], [/^([\d.]+) MB$/, (m, n) => `${n} МБ`],

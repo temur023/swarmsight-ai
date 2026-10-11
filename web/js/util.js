@@ -36,6 +36,22 @@ export async function api(path, opts = {}) {
   return body;
 }
 
+export function upload(path, form, onProgress) {
+  return new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open('POST', path);
+    x.upload.onprogress = e => { if (e.lengthComputable) onProgress?.(e.loaded / e.total); };
+    x.onload = () => {
+      let body = x.responseText;
+      try { body = JSON.parse(body); } catch {}
+      if (x.status >= 200 && x.status < 300) resolve(body);
+      else reject(new Error(typeof body === 'object' ? (body.detail ? (typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail)) : JSON.stringify(body)) : `HTTP ${x.status}: ${body}`));
+    };
+    x.onerror = () => reject(new Error('network error: the upload did not reach the server'));
+    x.send(form);
+  });
+}
+
 export function wsUrl(path) {
   const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
   return `${proto}//${location.host}${path}`;
@@ -159,7 +175,7 @@ export function fmtTime(ts) {
 
 export function dropZone(node, accept, onFiles) {
   const input = node.querySelector('input[type=file]');
-  node.addEventListener('click', () => input.click());
+  node.addEventListener('click', e => { if (e.target === input) return; e.preventDefault(); input.click(); });
   input.addEventListener('change', () => input.files.length && onFiles([...input.files]));
   node.addEventListener('dragover', e => { e.preventDefault(); node.classList.add('over'); });
   node.addEventListener('dragleave', () => node.classList.remove('over'));

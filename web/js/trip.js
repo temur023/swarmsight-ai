@@ -1,4 +1,4 @@
-import { api, baseLayer, C, clipPlayer, deviceId, drawBox, dropZone, esc, fitCanvas, geolocate, h, KIND, locText, media, pct, pretty, sec, streamJob, TASHKENT, typeName } from './util.js';
+import { api, baseLayer, C, clipPlayer, deviceId, drawBox, dropZone, esc, fitCanvas, geolocate, h, KIND, locText, media, pct, pretty, sec, streamJob, TASHKENT, typeName, upload as uploadForm } from './util.js';
 import { evidenceText, kindChip, reviewControls, statusChip } from './components.js';
 import { queueBadge } from './app.js';
 import { t as tr } from './i18n.js';
@@ -133,20 +133,35 @@ async function upload(root) {
     fd.append('video', file);
     fd.append('device_id', deviceId());
     fd.append('rights_scope', ui.querySelector('input[name=rights]:checked').value);
-    const tr = ui.querySelector('#track').files[0];
+    const tr = extra.track || ui.querySelector('#track').files[0];
     if (tr) { fd.append('track', tr); fd.append('track_offset_s', ui.querySelector('#offset').value || '0'); }
     const g = extra.pin || pin;
     if (!tr && g) { fd.append('lat', g.lat); fd.append('lon', g.lon); fd.append('gps_accuracy_m', g.acc || 15); }
     const isImg = file.type.startsWith('image') || /\.(jpe?g|png|webp)$/i.test(file.name);
     ui.querySelector('#run').classList.remove('hidden');
-    stxt.textContent = `uploading ${(file.size / 1e6).toFixed(1)} MB…${file.size > 150e6 ? ' a large file: on a slow connection, trim it to the minute that matters' : ''}`;
+    const mb = (file.size / 1e6).toFixed(1), big = file.size > 150e6 ? ' a large file: on a slow connection, trim it to the minute that matters' : '';
+    stxt.textContent = `uploading ${mb} MB…${big}`;
+    prog.style.width = '0%';
     try {
-      const res = await api('/api/v1/trips', { method: 'POST', body: fd });
+      const res = await uploadForm('/api/v1/trips', fd, p => {
+        prog.style.width = `${Math.round(p * 100)}%`;
+        stxt.textContent = p < 1 ? `uploading ${mb} MB · ${Math.round(p * 100)}%` : 'upload complete, starting the analysis…';
+      });
       const url = URL.createObjectURL(file);
       follow(res, isImg ? { imageSrc: url, tag: extra.tag || file.name } : { videoSrc: url, tag: extra.tag || file.name });
     } catch (e) { stxt.innerHTML = `<span class="error">${esc(e.message)}</span>`; }
   }
-  dropZone(ui.querySelector('#drop'), 'video/*,image/*', fs => send(fs[0]));
+  const isTrack = f => /\.(csv|gpx)$/i.test(f.name);
+  const isMedia = f => /^(video|image)\//.test(f.type) || /\.(mp4|mov|m4v|webm|mkv|avi|jpe?g|png|webp|heic)$/i.test(f.name);
+  dropZone(ui.querySelector('#drop'), 'video/*,image/*', fs => {
+    const v = fs.find(isMedia), tr = fs.find(isTrack);
+    if (!v) {
+      ui.querySelector('#run').classList.remove('hidden');
+      stxt.innerHTML = `<span class="error">${esc(tr ? 'This is a GPS track, not a video: choose it in the GPS track field on the right, then drop the video here.' : 'Not a video or a photo: drop an MP4, MOV or WEBM video, or a JPG/PNG photo.')}</span>`;
+      return;
+    }
+    send(v, tr ? { track: tr } : {});
+  });
 
   const s = await api('/api/v1/samples').catch(() => ({ samples: [], photos: [] }));
   for (const st of s.samples) {
