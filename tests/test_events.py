@@ -175,3 +175,36 @@ def test_event_left_without_observations_leaves_the_map(fx):
     old = fu.attach(a)["id"]
     fu.review(a, "correct", label="alligator_crack")
     assert event(st, old)["status"] not in ("candidate", "corroborated", "verified")
+
+
+def _trip(st, tid, device, sha):
+    st.insert("trips", {"id": tid, "device_id": device, "created_at": time.time(), "status": "done",
+                        "rights_scope": "road_only", "content_sha1": sha})
+
+
+def test_same_footage_from_two_devices_is_one_source(fx):
+    """One video uploaded from two browsers (or a sample run plus an upload of the sample) is not two cars."""
+    st, fu = fx
+    _trip(st, "t1", "dev-a", "same-bytes")
+    _trip(st, "t2", "dev-b", "same-bytes")
+    fu.attach(add_obs(st, "dev-a", trip="t1"))
+    e = fu.attach(add_obs(st, "dev-b", lat=LAT + 3 * M_LAT, trip="t2"))
+    assert e["n_sources"] == 1 and e["status"] == "candidate"
+
+
+def test_different_footage_from_two_devices_corroborates(fx):
+    st, fu = fx
+    _trip(st, "t1", "dev-a", "bytes-1")
+    _trip(st, "t2", "dev-b", "bytes-2")
+    fu.attach(add_obs(st, "dev-a", trip="t1"))
+    e = fu.attach(add_obs(st, "dev-b", lat=LAT + 3 * M_LAT, trip="t2"))
+    assert e["n_sources"] == 2 and e["status"] == "corroborated"
+
+
+def test_one_device_two_videos_is_one_source(fx):
+    st, fu = fx
+    _trip(st, "t1", "dev-a", "bytes-1")
+    _trip(st, "t2", "dev-a", "bytes-2")
+    fu.attach(add_obs(st, "dev-a", trip="t1"))
+    e = fu.attach(add_obs(st, "dev-a", lat=LAT + 3 * M_LAT, trip="t2"))
+    assert e["n_sources"] == 1

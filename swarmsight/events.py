@@ -38,6 +38,32 @@ def severity_label(s: float) -> str:
     return "high" if s >= 0.6 else "medium" if s >= 0.35 else "low"
 
 
+def independent_sources(obs: list[dict]) -> dict[str, tuple[str, float]]:
+    """Group observations into independent sources: the same device, or the same footage (identical file bytes,
+    e.g. one video uploaded from two browsers or a sample run and an upload of the sample), is one source.
+    Returns {source: (device of its most confident observation, that confidence)}."""
+    parent: dict[str, str] = {}
+
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for o in obs:
+        d = "d:" + o["device_id"]
+        find(d)
+        if o.get("content_sha1"):
+            parent[find("f:" + o["content_sha1"])] = find(d)
+    best: dict[str, tuple[str, float]] = {}
+    for o in obs:
+        r = find("d:" + o["device_id"])
+        if r not in best or o["conf"] > best[r][1]:
+            best[r] = (o["device_id"], o["conf"])
+    return best
+
+
 class Fusion:
     def __init__(self, store: Store):
         self.store = store
@@ -75,13 +101,12 @@ class Fusion:
 
     def refresh(self, eid: int) -> dict:
         e = self.store.one("SELECT * FROM events WHERE id=?", (eid,))
-        obs = self.store.query("SELECT * FROM observations WHERE event_id=? AND review_status!='rejected'", (eid,))
+        obs = self.store.query("SELECT o.*, t.content_sha1 FROM observations o LEFT JOIN trips t ON t.id=o.trip_id "
+                               "WHERE o.event_id=? AND o.review_status!='rejected'", (eid,))
         all_obs = self.store.query("SELECT id FROM observations WHERE event_id=?", (eid,))
-        best: dict[str, float] = {}
-        for o in obs:
-            best[o["device_id"]] = max(best.get(o["device_id"], 0.0), o["conf"])
+        best = independent_sources(obs)
         p_none = 1.0
-        for dev, c in best.items():
+        for dev, c in best.values():
             p_none *= 1.0 - c * self.store.reliability(dev)
         conf, n_src = (1.0 - p_none) if best else 0.0, len(best)
         if obs:

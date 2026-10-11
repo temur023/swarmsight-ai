@@ -5,6 +5,7 @@ Run: uvicorn swarmsight.server:app --host 0.0.0.0 --port 7860
 from __future__ import annotations
 
 import asyncio
+import functools
 import hashlib
 import hmac
 import io
@@ -364,7 +365,7 @@ async def create_trip(video: UploadFile = File(...), track: UploadFile | None = 
     if (video.content_type or "").startswith("image/") or (video.filename or "").lower().endswith(IMAGE_EXT):
         img, meta = _decode_image(data)
         loc = meta or ({"lat": lat, "lon": lon, "uncertainty_m": gps_accuracy_m, "source": "pin"} if lat is not None and lon is not None else None)
-        return _start_photo(img, video.filename, loc, device_id, rights_scope)
+        return _start_photo(img, video.filename, loc, device_id, rights_scope, hashlib.sha1(data).hexdigest())
     suffix = (Path(video.filename or "trip.mp4").suffix or ".mp4")[:6]
     path = UPLOAD_DIR / f"{uuid.uuid4().hex}{suffix}"
     path.write_bytes(data)
@@ -377,10 +378,10 @@ async def create_trip(video: UploadFile = File(...), track: UploadFile | None = 
             raise HTTPException(400, f"track: {e}")
     elif lat is not None and lon is not None:
         tr = single_point(lat, lon, gps_accuracy_m, max_seconds)
-    return _start_trip(path, video.filename, tr, device_id, rights_scope, sample_fps, max_seconds)
+    return _start_trip(path, video.filename, tr, device_id, rights_scope, sample_fps, max_seconds, content_sha1=hashlib.sha1(data).hexdigest())
 
 
-def _start_trip(path: Path, filename: str | None, tr, device_id, rights_scope, sample_fps, max_seconds, keep_upload=False):
+def _start_trip(path: Path, filename: str | None, tr, device_id, rights_scope, sample_fps, max_seconds, keep_upload=False, content_sha1=None):
     try:
         _check_capacity()
     except HTTPException:
@@ -393,18 +394,20 @@ def _start_trip(path: Path, filename: str | None, tr, device_id, rights_scope, s
     max_s = float(np.clip(max_seconds, 5.0, 300.0))
     trip_id = uuid.uuid4().hex[:12]
     S.store.insert("trips", {"id": trip_id, "device_id": device, "filename": (filename or "")[:120], "created_at": time.time(),
-                             "status": "processing", "rights_scope": rights_scope, "gps_source": tr.source if tr is not None else None})
+                             "status": "processing", "rights_scope": rights_scope, "gps_source": tr.source if tr is not None else None,
+                             "content_sha1": content_sha1})
     job = _submit("trip", lambda j: _process_trip(j, trip_id, path, tr, device, fps, max_s, keep_upload))
     return {"trip_id": trip_id, "job_id": job.id, "sample_fps": fps}
 
 
-def _start_photo(img, filename, loc, device_id, rights_scope):
+def _start_photo(img, filename, loc, device_id, rights_scope, content_sha1=None):
     _check_capacity()
     device = _device_id(device_id)
     S.store.device(device)
     trip_id = uuid.uuid4().hex[:12]
     S.store.insert("trips", {"id": trip_id, "device_id": device, "filename": (filename or "")[:120], "created_at": time.time(),
-                             "status": "processing", "rights_scope": rights_scope, "gps_source": loc["source"] if loc else None})
+                             "status": "processing", "rights_scope": rights_scope, "gps_source": loc["source"] if loc else None,
+                             "content_sha1": content_sha1})
 
     def work(job):
         try:
@@ -457,7 +460,17 @@ def run_sample(name: str, device_id: str | None = None, rights_scope: str = "roa
     if not s:
         raise HTTPException(404, "unknown sample")
     tr = parse_track((SAMPLES_DIR / s["track"]).read_bytes(), s["track"], s.get("track_offset_s", 0.0)) if s.get("track") else None
-    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, f"sample:{name}", rights_scope, None, 120.0, keep_upload=True)
+    return _start_trip(SAMPLES_DIR / s["video"], s["video"], tr, f"sample:{name}", rights_scope, None, 120.0, keep_upload=True,
+                       content_sha1=_file_sha1(SAMPLES_DIR / s["video"]))
+
+
+@functools.lru_cache(maxsize=32)
+def _file_sha1(path: Path) -> str:
+    h = hashlib.sha1()
+    with open(path, "rb") as f:
+        while chunk := f.read(1 << 20):
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def trip_report(trip_id: str) -> dict:

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS devices (
 CREATE TABLE IF NOT EXISTS trips (
     id TEXT PRIMARY KEY, device_id TEXT NOT NULL, filename TEXT, created_at REAL NOT NULL, status TEXT NOT NULL,
     rights_scope TEXT NOT NULL, gps_source TEXT, duration_s REAL, analysed_s REAL, kept_s REAL, n_events INTEGER,
-    info TEXT, perf TEXT, reduction TEXT, road_users TEXT, error TEXT
+    info TEXT, perf TEXT, reduction TEXT, road_users TEXT, error TEXT, content_sha1 TEXT
 );
 CREATE TABLE IF NOT EXISTS telemetry (
     trip_id TEXT NOT NULL, t REAL NOT NULL, lat REAL NOT NULL, lon REAL NOT NULL
@@ -84,6 +84,11 @@ class Store:
         self.conn = sqlite3.connect(path, check_same_thread=False)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
+        # columns added after the first deployments: an existing database gets them in place
+        cols = {r[1] for r in self.conn.execute("PRAGMA table_info(trips)")}
+        if "content_sha1" not in cols:
+            self.conn.execute("ALTER TABLE trips ADD COLUMN content_sha1 TEXT")
+            self.conn.commit()
         self.lock = threading.RLock()
 
     def backup_to(self, path: str | Path):
